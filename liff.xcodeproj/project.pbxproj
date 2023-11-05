@@ -14,6 +14,12 @@
 		9AAF7C942AF5623F00E60E2F /* liffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C932AF5623F00E60E2F /* liffTests.swift */; };
 		9AAF7C9E2AF5623F00E60E2F /* liffUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C9D2AF5623F00E60E2F /* liffUITests.swift */; };
 		9AAF7CA02AF5623F00E60E2F /* liffUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C9F2AF5623F00E60E2F /* liffUITestsLaunchTests.swift */; };
+		9AAF7CB02AF5880600E60E2F /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CAF2AF5880600E60E2F /* Starscream */; };
+		9AAF7CB32AF599B300E60E2F /* BinarySwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CB22AF599B300E60E2F /* BinarySwift */; };
+		9AAF7CB52AF59CD400E60E2F /* libweechatrelay.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */; };
+		9AAF7CB92AF5A1B900E60E2F /* weechat-relay.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7CB82AF5A1B900E60E2F /* weechat-relay.c */; };
+		9AAF7CC52AF5A1E300E60E2F /* object.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7CBF2AF5A1E300E60E2F /* object.c */; };
+		9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9AD3D41F2AF647C700B13019 /* SocketIO */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +50,14 @@
 		9AAF7C992AF5623F00E60E2F /* liffUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = liffUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C9D2AF5623F00E60E2F /* liffUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffUITests.swift; sourceTree = "<group>"; };
 		9AAF7C9F2AF5623F00E60E2F /* liffUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libweechatrelay.a; sourceTree = "<group>"; };
+		9AAF7CB62AF59D4700E60E2F /* weechat-relay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "weechat-relay.h"; sourceTree = "<group>"; };
+		9AAF7CB82AF5A1B900E60E2F /* weechat-relay.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "weechat-relay.c"; sourceTree = "<group>"; };
+		9AAF7CBA2AF5A1E300E60E2F /* object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = object.h; sourceTree = "<group>"; };
+		9AAF7CBB2AF5A1E300E60E2F /* parse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parse.h; sourceTree = "<group>"; };
+		9AAF7CBF2AF5A1E300E60E2F /* object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = object.c; sourceTree = "<group>"; };
+		9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = lithstuff.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		9AD3D4222AF7199500B13019 /* viewplayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = viewplayground.playground; path = ../../viewplayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +65,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9AAF7CB02AF5880600E60E2F /* Starscream in Frameworks */,
+				9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */,
+				9AAF7CB32AF599B300E60E2F /* BinarySwift in Frameworks */,
+				9AAF7CB52AF59CD400E60E2F /* libweechatrelay.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +92,12 @@
 		9AAF7C762AF5623E00E60E2F = {
 			isa = PBXGroup;
 			children = (
+				9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */,
+				9AAF7CBF2AF5A1E300E60E2F /* object.c */,
+				9AAF7CBA2AF5A1E300E60E2F /* object.h */,
+				9AAF7CBB2AF5A1E300E60E2F /* parse.h */,
+				9AAF7CB82AF5A1B900E60E2F /* weechat-relay.c */,
+				9AAF7CB62AF59D4700E60E2F /* weechat-relay.h */,
 				9AAF7C812AF5623E00E60E2F /* liff */,
 				9AAF7C922AF5623F00E60E2F /* liffTests */,
 				9AAF7C9C2AF5623F00E60E2F /* liffUITests */,
@@ -94,6 +118,8 @@
 		9AAF7C812AF5623E00E60E2F /* liff */ = {
 			isa = PBXGroup;
 			children = (
+				9AD3D4222AF7199500B13019 /* viewplayground.playground */,
+				9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */,
 				9AAF7C822AF5623E00E60E2F /* liffApp.swift */,
 				9AAF7C842AF5623E00E60E2F /* ContentView.swift */,
 				9AAF7C862AF5623F00E60E2F /* Assets.xcassets */,
@@ -143,6 +169,11 @@
 			dependencies = (
 			);
 			name = liff;
+			packageProductDependencies = (
+				9AAF7CAF2AF5880600E60E2F /* Starscream */,
+				9AAF7CB22AF599B300E60E2F /* BinarySwift */,
+				9AD3D41F2AF647C700B13019 /* SocketIO */,
+			);
 			productName = liff;
 			productReference = 9AAF7C7F2AF5623E00E60E2F /* liff.app */;
 			productType = "com.apple.product-type.application";
@@ -195,6 +226,7 @@
 				TargetAttributes = {
 					9AAF7C7E2AF5623E00E60E2F = {
 						CreatedOnToolsVersion = 15.0.1;
+						LastSwiftMigration = 1500;
 					};
 					9AAF7C8E2AF5623F00E60E2F = {
 						CreatedOnToolsVersion = 15.0.1;
@@ -215,6 +247,11 @@
 				Base,
 			);
 			mainGroup = 9AAF7C762AF5623E00E60E2F;
+			packageReferences = (
+				9AAF7CAE2AF5880600E60E2F /* XCRemoteSwiftPackageReference "Starscream" */,
+				9AAF7CB12AF599B300E60E2F /* XCRemoteSwiftPackageReference "BinarySwift" */,
+				9AD3D41E2AF647C700B13019 /* XCRemoteSwiftPackageReference "socket" */,
+			);
 			productRefGroup = 9AAF7C802AF5623E00E60E2F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -258,7 +295,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */,
+				9AAF7CC52AF5A1E300E60E2F /* object.c in Sources */,
 				9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */,
+				9AAF7CB92AF5A1B900E60E2F /* weechat-relay.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +458,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"liff/Preview Content\"";
@@ -430,14 +470,21 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liff",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.liff;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -448,6 +495,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"liff/Preview Content\"";
@@ -459,14 +507,20 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liff",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.liff;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -588,6 +642,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9AAF7CAE2AF5880600E60E2F /* XCRemoteSwiftPackageReference "Starscream" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/daltoniam/Starscream";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.6;
+			};
+		};
+		9AAF7CB12AF599B300E60E2F /* XCRemoteSwiftPackageReference "BinarySwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Szaq/BinarySwift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		9AD3D41E2AF647C700B13019 /* XCRemoteSwiftPackageReference "socket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
+			requirement = {
+				branch = v16.1.0;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9AAF7CAF2AF5880600E60E2F /* Starscream */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9AAF7CAE2AF5880600E60E2F /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
+		};
+		9AAF7CB22AF599B300E60E2F /* BinarySwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9AAF7CB12AF599B300E60E2F /* XCRemoteSwiftPackageReference "BinarySwift" */;
+			productName = BinarySwift;
+		};
+		9AD3D41F2AF647C700B13019 /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9AD3D41E2AF647C700B13019 /* XCRemoteSwiftPackageReference "socket" */;
+			productName = SocketIO;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9AAF7C772AF5623E00E60E2F /* Project object */;
 }
