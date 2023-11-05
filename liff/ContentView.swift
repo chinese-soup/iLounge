@@ -270,10 +270,10 @@ struct SettingsView: View {
 
 
 class SocketManagerWrapper: ObservableObject {
-    @Published var messages: [String] = [] // Make this into a Message Model
-    // OR well, make everything into models, really :--)
-    // E.g. buffers (servers / channels)
-    // E.g. NickList etc.
+    @Published var messages: [String] = [] // TODO: Make this into a proper Message Model
+    // TODO: OR well, make everything into models, really :--)
+    // TODO: E.g. buffers (servers / channels)
+    // TODO: E.g. NickList etc.
     //
     var socket: SocketManager?
     @AppStorage("loungeHostname") private var hostnameSetting: String = ""
@@ -319,10 +319,27 @@ class SocketManagerWrapper: ObservableObject {
         socket?.defaultSocket.on("msg") { [self] data, ack in
             if let message = data.first as? Dictionary<String,Any>,
                let msg = message["msg"] as? Dictionary<String,Any> {
+                // TODO: ID - good for the model I wanna make later, I guess :-)
+                let _ = message["id"] as! Int
+                
+                // Text
                 let messageText = msg["text"] as! String
-                let messageTs = msg["time"] as! String
+                
+                // Timestamp
+                let messageTsStr = msg["time"] as! String
+                var messageTs = messageTsStr
+                // If we can parse the timestamp, change it to correct format
+                if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
+                    let outputFormatter = DateFormatter()
+                    outputFormatter.dateFormat = "HH:mm:ss"
+                    messageTs = outputFormatter.string(from: messageDateUTC)
+                }
+                // From
                 let messageFrom = msg["from"] as! Dictionary<String, Any>
                 let messageNick = messageFrom["nick"] as! String
+                
+                // Final message format
+                // TODO: Proper models
                 let messageFinal = "\(messageTs) <\(messageNick)> \(messageText)"
                 self.messages.append(messageFinal)
             }
@@ -358,6 +375,9 @@ class SocketManagerWrapper: ObservableObject {
                             self.messages.append(String(describing: channel["name"]))
                             if let messages = channel["messages"] as? Array<Dictionary<String, Any>> {
                                 for message in messages {
+                                    // TODO: ID - good for the model I guess :-)
+                                    let _ = message["id"] as! Int
+                                    
                                     // Text
                                     let messageText = message["text"] as! String
                                     
