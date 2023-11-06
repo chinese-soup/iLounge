@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "binaryswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Szaq/BinarySwift",
-      "state" : {
-        "branch" : "master",
-        "revision" : "b4635df053999eac3eaae97dfb8bc4fffe4f5773"
-      }
-    },
-    {
       "identity" : "socket.io-client-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/socketio/socket.io-client-swift",

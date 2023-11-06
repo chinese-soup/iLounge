@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import Starscream
-import BinarySwift
 import SocketIO
 import CoreData
 
@@ -24,7 +23,7 @@ class SocketManagerWrapper: ObservableObject {
     @AppStorage("loungePort") private var portSetting: String = "8080"
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
     
-    init(socketURL: String) {
+    init() {
         var proto = "ws"
         if useSslSetting {
             proto = "wss"

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Starscream
-import BinarySwift
 import SocketIO
 import CoreData
 
@@ -42,7 +41,7 @@ struct ContentView: View {
     // View's constructor
     init() {
         print("Hello from init()")
-        self.socketManager = SocketManagerWrapper(socketURL: "ws://127.0.0.2:9000/")
+        self.socketManager = SocketManagerWrapper()
     }
     
     
@@ -62,12 +61,12 @@ struct ContentView: View {
                                             handleUserClickedLink(url: url)
                                             return .handled
                                         })
-                                        .onTapGesture {
+                                        /*.onTapGesture {
                                             selectedEntry = msg
                                             let pasteboard = UIPasteboard.general
                                             pasteboard.string = msg
                                            
-                                        }
+                                        }*/
                                         .contextMenu {
                                             Button {
                                             } label: {

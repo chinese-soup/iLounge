@@ -11,7 +11,8 @@ import CoreData
 
 struct TestView: View {
     @Binding var isTestViewVisible: Bool
-    private let width = UIScreen.main.bounds.width - 100
+    //private let width = UIScreen.main.bounds.width - 100
+    private let width = 500.0
     let baseText = "apple pear orange lemon"
     let baseUrl = "https://github.com/search/repositories?q="
     
