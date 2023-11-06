@@ -20,7 +20,7 @@ struct ContentView: View {
     @State public var scrollProxy: ScrollViewProxy? = nil
     @State private var selectedEntry: String? = nil
     
-    @State private var currentPreviewURL = "https://picsum.photos/600"
+    @State private var currentPreviewURL = "https://picsum.photos/600" // TODO: Remove
     
     // Focus state to keep the text input field focused after sending a message
     @FocusState private var textFieldIsFocused: Bool
@@ -42,19 +42,9 @@ struct ContentView: View {
     // View's constructor
     init() {
         print("Hello from init()")
-        //configureSocketIO()
         self.socketManager = SocketManagerWrapper(socketURL: "ws://127.0.0.2:9000/")
     }
     
-    func handleUserClickedLink(url: URL) {
-        if isImage(text: url.absoluteString) {
-            currentPreviewURL = url.absoluteString
-            isPreviewViewVisible.toggle()
-        }
-        else {
-            UIApplication.shared.open(url)
-        }
-    }
     
     var body: some View {
         ZStack {
@@ -99,18 +89,20 @@ struct ContentView: View {
                                 }
                             }
                         }
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity).scrollDismissesKeyboard(.interactively)
                     
                     HStack {
-                        TextField("Type a message", text: $messageInput, onCommit: {
-                            DispatchQueue.main.async {
-                                sendMessage()
+                        TextField("Type a message", text: $messageInput) // TextEditor for multiline, but then I can't send lol
+                            .onSubmit {
+                                DispatchQueue.main.async {
+                                    sendMessage()
+                                }
                             }
-                        })
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                        .focused($textFieldIsFocused)
-                        
+                            .frame(maxHeight: 40)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding(.horizontal)
+                            .focused($textFieldIsFocused)
+                            
                         Button(action: {
                             sendMessage()
                         }) {
@@ -156,6 +148,16 @@ struct ContentView: View {
         }
     }
     
+    func handleUserClickedLink(url: URL) {
+        if isImage(text: url.absoluteString) {
+            currentPreviewURL = url.absoluteString
+            isPreviewViewVisible.toggle()
+        }
+        else {
+            UIApplication.shared.open(url)
+        }
+    }
+    
     func sendMessage() {
         if !messageInput.isEmpty {
             socketManager.sendMessage(message: messageInput, channel_id: 2)
@@ -170,20 +172,6 @@ struct ContentView: View {
         textFieldIsFocused = true
     }
     
-    func findFirstLinkRange(in text: String) -> Range<String.Index>? {
-        do {
-            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-            if let match = detector.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text)) {
-                if let range = Range(match.range, in: text) {
-                    return range
-                }
-            }
-        } catch {
-            print("Error: \(error.localizedDescription)")
-        }
-        return nil
-    }
-    
     func isImage(text: String) -> Bool {
         /* A dumb way to check if URL could be an image to open in a preview instead of the web browser */
         let letImagePattern = #"(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\.(?:jpg|jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?"#
@@ -194,239 +182,6 @@ struct ContentView: View {
     }
 }
 
-struct TestView: View {
-    @Binding var isTestViewVisible: Bool
-    private let width = UIScreen.main.bounds.width - 100
-    let baseText = "apple http://google.com pear orange lemon"
-    let baseUrl = "https://github.com/search/repositories?q="
-    
-    var body: some View {
-        
-        let clickableText = baseText.split(separator: " ").map{ "[\($0)](\(baseUrl)\($0))" }
-        ForEach(clickableText, id: \.self) { txt in
-            let attributedString = try! AttributedString(markdown: txt)
-            Text(attributedString)
-                .environment(\.openURL, OpenURLAction { url in
-                    print("---> link actioned: \(String(describing: txt.split(separator: "=").last))" )
-                    return .systemAction
-                })
-        }
-        ZStack {
-                    Color.gray.opacity(0.5)
-                        .onTapGesture {
-                            withAnimation {
-                                isTestViewVisible.toggle()
-                            }
-                        }
-
-                    VStack {
-                        Text("Side Drawer")
-                            .font(.largeTitle)
-                            .padding()
-
-                        Spacer()
-                    }
-                }
-        
-        VStack {
-            Text(.init("Ahoj [blabla](https://google.com)"))
-            Color.blue
-        }
-        .frame(width: self.width)
-    }
-}
-
-class SocketManagerWrapper: ObservableObject {
-    @Published var messages: [String] = [] // TODO: Make this into a proper Message Model
-    // TODO: OR well, make everything into models, really :--)
-    // TODO: E.g. buffers (servers / channels)
-    // TODO: E.g. NickList etc.
-    //
-    var socket: SocketManager?
-    @AppStorage("loungeHostname") private var hostnameSetting: String = ""
-    @AppStorage("loungePort") private var portSetting: String = "8080"
-    @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
-    
-    init(socketURL: String) {
-        var proto = "ws"
-        if useSslSetting {
-            proto = "wss"
-            proto = "https"
-        }
-        if let formattedSocketURL = URL(string:"\(proto)://\(hostnameSetting):\(portSetting)/") {
-            print("URL is \(formattedSocketURL)")
-            socket = SocketManager(socketURL: formattedSocketURL, config: [.log(false), .forceWebsockets(true)])
-            DispatchQueue.main.async { [self] in
-                configureSocket()
-            }
-        }
-        else {
-            print("SOCKET FAILED because WRONG HOSTNAME") // TODO: uhh
-            self.messages.append("Socket connection failed, wrong hostname probs bro lol") // TODO: ^
-        }
-        
-        
-    }
-    
-    func sendMessage(message: String, channel_id: Int = 2) {
-        // TODO: Un-hardcode target, load from the buffer model that we want to send to the "current buffer"
-        let msgToSend = ["target": channel_id, "text": message] as [String : Any]
-        socket?.defaultSocket.emit("input", msgToSend)
-    }
-    
-    func parseTimestamp(isoDate: String) -> Date? {
-        // TODO: Move out of here to some utils class or something
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        if let date = dateFormatter.date(from:isoDate) {
-            return date
-        } else {
-            return nil
-        }
-    }
-    
-    func replaceLinksWithMarkdownHyperlinks(origMsgText: String) -> String {
-        let urlPattern = #"((?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+)"#
-        let messageTextWithMarkdown = origMsgText.replacingOccurrences(of: urlPattern, with: "[$1]($1)", options: .regularExpression)
-        print(messageTextWithMarkdown)
-        
-        return messageTextWithMarkdown
-    }
-    
-    private func configureSocket() {
-        
-        // TODO: Use for debugging to get all the events handled
-        //socket?.defaultSocket.onAny {print("Got event: \($0.event), with items: \($0.items)")}
-        socket?.defaultSocket.on(clientEvent: .statusChange) { data, ack in
-            print("Status change", data, ack)
-            
-            self.messages.append("Status: \(data)")
-        }
-        
-        socket?.defaultSocket.on(clientEvent: .connect) { data, ack in
-            print("Socket connected", data, ack)
-        }
-        
-        socket?.defaultSocket.on("msg") { [self] data, ack in
-            if let message = data.first as? Dictionary<String,Any>,
-               let msg = message["msg"] as? Dictionary<String,Any> {
-                // TODO: ID - good for the model I wanna make later, I guess :-)
-                //let _ = message["id"] as! Int // except it isn't in the "msg" message? lol
-                
-                // Text
-                let messageText = msg["text"] as! String
-                let messageTextWithMarkdown = replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
-                
-                // Timestamp
-                let messageTsStr = msg["time"] as! String
-                var messageTs = messageTsStr
-                // If we can parse the timestamp, change it to correct format
-                if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
-                    let outputFormatter = DateFormatter()
-                    outputFormatter.dateFormat = "HH:mm:ss"
-                    messageTs = outputFormatter.string(from: messageDateUTC)
-                }
-                
-                // From
-                var messageFinal: String;
-                if let messageFrom = msg["from"] as? Dictionary<String, Any>,
-                   let messageNick = messageFrom["nick"] as? String {
-                    messageFinal = "\(messageTs) <\(messageNick)> \(messageTextWithMarkdown)"
-                }
-                else {
-                    messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
-                }
-                
-                // Final message format
-                // TODO: Proper models
-                self.messages.append(messageFinal)
-            }
-        }
-        
-        socket?.defaultSocket.on("message") { [self] data, ack in
-            print("message \(data)")
-            if let message = data.first as? String {
-                self.messages.append(message)
-                self.messages.append(String(describing:data))
-            }
-        }
-        
-        socket?.defaultSocket.on("connect") { [self] data, ack in
-            print("message \(data)")
-            if let message = data.first as? String {
-                self.messages.append(message)
-                self.messages.append(String(describing:data))
-            }
-        }
-        
-        socket?.defaultSocket.on("init") {data, ack in
-            //print("INIT \(String(describing:data))")
-            //let typeof = type(of: data)
-            
-            if let message = data.first as? Dictionary<String,Any>,
-               let networks = message["networks"] as? Array<Dictionary<String,Any>> {
-                for network in networks {
-                    if let channels = network["channels"] as? Array<Dictionary<String, Any>> {
-                        for channel in channels {
-                            self.messages.append(String(describing: channel["name"]))
-                            if let messages = channel["messages"] as? Array<Dictionary<String, Any>> {
-                                for message in messages {
-                                    // TODO: ID - good for the future model I guess :-)
-                                    let _ = message["id"] as! Int
-                                    
-                                    // Text
-                                    let messageText = message["text"] as! String
-                                    let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
-                                    
-                                    // Timestamp
-                                    let messageTsStr = message["time"] as! String
-                                    var messageTs = messageTsStr
-                                    // If we can parse the timestamp, change it to correct format
-                                    if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
-                                        let outputFormatter = DateFormatter()
-                                        outputFormatter.dateFormat = "HH:mm:ss"
-                                        messageTs = outputFormatter.string(from: messageDateUTC)
-                                    }
-                                    
-                                    // From
-                                    var messageFinal: String;
-                                    if let messageFrom = message["from"] as? Dictionary<String, Any>,
-                                       let messageNick = messageFrom["nick"] as? String {
-                                        messageFinal = "\(messageTs) <\(messageNick)> \(messageTextWithMarkdown)"
-                                    }
-                                    else {
-                                        messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
-                                    }
-                                    
-                                    // Final message format
-                                    // TODO: Proper models
-                                    self.messages.append(messageFinal)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-            
-        socket?.defaultSocket.on("auth:start") { [self] data, ack in
-            // we got  auth start's exgon gonan give it to em
-            print("AUTH START BRo message \(String(describing:data))")
-            let swiftDict: [String: String] = ["user": "polivka", "password": "asdf"]
-            
-            socket?.defaultSocket.emit("auth:perform", swiftDict)
-            
-            if let message = data.first as? String {
-                print("auth:start \(message)")
-                self.messages.append(String(describing:message))
-            }
-        }
-        
-        socket?.defaultSocket.connect()
-        
-    }
-}
 
 #Preview {
     ContentView()

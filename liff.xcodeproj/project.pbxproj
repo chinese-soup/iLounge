@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */; };
 		9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD92AF916BE00E8B8BC /* SettingsView.swift */; };
+		9A719DDC2AF9906E00E8B8BC /* SocketMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */; };
+		9A719DDE2AF990D800E8B8BC /* RandomTestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */; };
 		9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C822AF5623E00E60E2F /* liffApp.swift */; };
 		9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C842AF5623E00E60E2F /* ContentView.swift */; };
 		9AAF7C872AF5623F00E60E2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AAF7C862AF5623F00E60E2F /* Assets.xcassets */; };
@@ -18,7 +20,6 @@
 		9AAF7CA02AF5623F00E60E2F /* liffUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C9F2AF5623F00E60E2F /* liffUITestsLaunchTests.swift */; };
 		9AAF7CB02AF5880600E60E2F /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CAF2AF5880600E60E2F /* Starscream */; };
 		9AAF7CB32AF599B300E60E2F /* BinarySwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CB22AF599B300E60E2F /* BinarySwift */; };
-		9AAF7CB52AF59CD400E60E2F /* libweechatrelay.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */; };
 		9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9AD3D41F2AF647C700B13019 /* SocketIO */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,8 @@
 /* Begin PBXFileReference section */
 		9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		9A719DD92AF916BE00E8B8BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketMan.swift; sourceTree = "<group>"; };
+		9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomTestingView.swift; sourceTree = "<group>"; };
 		9AAF7C7F2AF5623E00E60E2F /* liff.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liff.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C822AF5623E00E60E2F /* liffApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffApp.swift; sourceTree = "<group>"; };
 		9AAF7C842AF5623E00E60E2F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -65,7 +68,6 @@
 				9AAF7CB02AF5880600E60E2F /* Starscream in Frameworks */,
 				9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */,
 				9AAF7CB32AF599B300E60E2F /* BinarySwift in Frameworks */,
-				9AAF7CB52AF59CD400E60E2F /* libweechatrelay.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +120,8 @@
 				9AAF7C862AF5623F00E60E2F /* Assets.xcassets */,
 				9AAF7C882AF5623F00E60E2F /* Preview Content */,
 				9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */,
+				9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */,
+				9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */,
 			);
 			path = liff;
 			sourceTree = "<group>";
@@ -289,6 +293,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */,
+				9A719DDC2AF9906E00E8B8BC /* SocketMan.swift in Sources */,
+				9A719DDE2AF990D800E8B8BC /* RandomTestingView.swift in Sources */,
 				9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */,
 				9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */,
 				9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */,
