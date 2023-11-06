@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */; };
+		9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD92AF916BE00E8B8BC /* SettingsView.swift */; };
 		9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C822AF5623E00E60E2F /* liffApp.swift */; };
 		9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C842AF5623E00E60E2F /* ContentView.swift */; };
 		9AAF7C872AF5623F00E60E2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AAF7C862AF5623F00E60E2F /* Assets.xcassets */; };
@@ -17,8 +19,6 @@
 		9AAF7CB02AF5880600E60E2F /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CAF2AF5880600E60E2F /* Starscream */; };
 		9AAF7CB32AF599B300E60E2F /* BinarySwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CB22AF599B300E60E2F /* BinarySwift */; };
 		9AAF7CB52AF59CD400E60E2F /* libweechatrelay.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */; };
-		9AAF7CB92AF5A1B900E60E2F /* weechat-relay.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7CB82AF5A1B900E60E2F /* weechat-relay.c */; };
-		9AAF7CC52AF5A1E300E60E2F /* object.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7CBF2AF5A1E300E60E2F /* object.c */; };
 		9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9AD3D41F2AF647C700B13019 /* SocketIO */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		9A719DD92AF916BE00E8B8BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9AAF7C7F2AF5623E00E60E2F /* liff.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liff.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C822AF5623E00E60E2F /* liffApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffApp.swift; sourceTree = "<group>"; };
 		9AAF7C842AF5623E00E60E2F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -51,11 +53,6 @@
 		9AAF7C9D2AF5623F00E60E2F /* liffUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffUITests.swift; sourceTree = "<group>"; };
 		9AAF7C9F2AF5623F00E60E2F /* liffUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libweechatrelay.a; sourceTree = "<group>"; };
-		9AAF7CB62AF59D4700E60E2F /* weechat-relay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "weechat-relay.h"; sourceTree = "<group>"; };
-		9AAF7CB82AF5A1B900E60E2F /* weechat-relay.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "weechat-relay.c"; sourceTree = "<group>"; };
-		9AAF7CBA2AF5A1E300E60E2F /* object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = object.h; sourceTree = "<group>"; };
-		9AAF7CBB2AF5A1E300E60E2F /* parse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parse.h; sourceTree = "<group>"; };
-		9AAF7CBF2AF5A1E300E60E2F /* object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = object.c; sourceTree = "<group>"; };
 		9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = lithstuff.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		9AD3D4222AF7199500B13019 /* viewplayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = viewplayground.playground; path = ../../viewplayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
@@ -93,11 +90,6 @@
 			isa = PBXGroup;
 			children = (
 				9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */,
-				9AAF7CBF2AF5A1E300E60E2F /* object.c */,
-				9AAF7CBA2AF5A1E300E60E2F /* object.h */,
-				9AAF7CBB2AF5A1E300E60E2F /* parse.h */,
-				9AAF7CB82AF5A1B900E60E2F /* weechat-relay.c */,
-				9AAF7CB62AF59D4700E60E2F /* weechat-relay.h */,
 				9AAF7C812AF5623E00E60E2F /* liff */,
 				9AAF7C922AF5623F00E60E2F /* liffTests */,
 				9AAF7C9C2AF5623F00E60E2F /* liffUITests */,
@@ -118,12 +110,14 @@
 		9AAF7C812AF5623E00E60E2F /* liff */ = {
 			isa = PBXGroup;
 			children = (
+				9A719DD92AF916BE00E8B8BC /* SettingsView.swift */,
 				9AD3D4222AF7199500B13019 /* viewplayground.playground */,
 				9AAF7CB42AF59CD400E60E2F /* libweechatrelay.a */,
 				9AAF7C822AF5623E00E60E2F /* liffApp.swift */,
 				9AAF7C842AF5623E00E60E2F /* ContentView.swift */,
 				9AAF7C862AF5623F00E60E2F /* Assets.xcassets */,
 				9AAF7C882AF5623F00E60E2F /* Preview Content */,
+				9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */,
 			);
 			path = liff;
 			sourceTree = "<group>";
@@ -294,10 +288,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */,
 				9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */,
-				9AAF7CC52AF5A1E300E60E2F /* object.c in Sources */,
+				9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */,
 				9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */,
-				9AAF7CB92AF5A1B900E60E2F /* weechat-relay.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

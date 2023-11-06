@@ -16,8 +16,11 @@ struct ContentView: View {
     @State private var messageInput = ""
     @State private var isSettingsVisible = false
     @State private var isTestViewVisible = false
+    @State private var isPreviewViewVisible = false
     @State public var scrollProxy: ScrollViewProxy? = nil
     @State private var selectedEntry: String? = nil
+    
+    @State private var currentPreviewURL = "https://picsum.photos/600"
     
     // Focus state to keep the text input field focused after sending a message
     @FocusState private var textFieldIsFocused: Bool
@@ -27,9 +30,11 @@ struct ContentView: View {
     @State private var messageToSend = ""
     
     // Settings using AppStorage
-    @AppStorage("loungeHostname") private var hostnameSetting: String = ""
-    @AppStorage("loungePort") private var portSetting: String = "8080"
-    @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
+    @AppStorage("loungeHostname") private var hostnameSetting: String = "" // TODO: Unused here?
+    @AppStorage("loungePort") private var portSetting: String = "8080" // TODO: Unused here?
+    @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false // TODO: Unused here?
+    
+    @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
     
     // SocketIO manager, needs to be ObservedObject so that it doesn't get destroyed during the lifetime of the app
     @ObservedObject var socketManager: SocketManagerWrapper //= SocketManagerWrapper(socketURL: "ws://127.0.0.2:9000/")
@@ -38,80 +43,116 @@ struct ContentView: View {
     init() {
         print("Hello from init()")
         //configureSocketIO()
-        
         self.socketManager = SocketManagerWrapper(socketURL: "ws://127.0.0.2:9000/")
     }
     
+    func handleUserClickedLink(url: URL) {
+        if isImage(text: url.absoluteString) {
+            currentPreviewURL = url.absoluteString
+            isPreviewViewVisible.toggle()
+        }
+        else {
+            UIApplication.shared.open(url)
+        }
+    }
+    
     var body: some View {
-        NavigationStack {
-            VStack {
-                ScrollView {
-                    ScrollViewReader { proxy in
-                        VStack(alignment: .leading, spacing: 5) {
-                            ForEach(socketManager.messages, id: \.self) { msg in
-                                Text(msg).id(msg) // id here is important for the scroll proxy to work apparently
-                                    .padding(.horizontal)
-                                    .onTapGesture {
-                                        selectedEntry = msg
-                                        let pasteboard = UIPasteboard.general
-                                        pasteboard.string = "Hello, world!"
-                                    }
+        ZStack {
+            NavigationStack {
+                VStack {
+                    ScrollView {
+                        ScrollViewReader { proxy in
+                            VStack(alignment: .leading, spacing: 5) {
+                                ForEach(socketManager.messages, id: \.self) { msg in
+                                    Text(.init(msg)).id(msg) // id here is important for the scroll proxy to work apparently
+                                        .padding(.horizontal)
+                                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
+                                        //.textSelection(.enabled)
+                                        .environment(\.openURL, OpenURLAction { url in
+                                            handleUserClickedLink(url: url)
+                                            return .handled
+                                        })
+                                        .onTapGesture {
+                                            selectedEntry = msg
+                                            let pasteboard = UIPasteboard.general
+                                            pasteboard.string = msg
+                                           
+                                        }
+                                        .contextMenu {
+                                            Button {
+                                            } label: {
+                                                Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
+                                            }
+                                            Button {
+                                            } label: {
+                                                Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
+                                            }
+                                        }
+                                }
+                            }
+                            .onAppear {
+                                scrollProxy = proxy
+                            }
+                            .onChange(of: socketManager.messages) {
+                                withAnimation {
+                                    scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
+                                }
                             }
                         }
-                        .onAppear {
-                            scrollProxy = proxy
-                        }
-                        .onChange(of: socketManager.messages) {
-                            withAnimation {
-                                scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
-                            }
-                        }
-                    }
-                    /*List(socketManager.messages, id: \.self) { message in
-                     Text(message)
-                     }*/
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                HStack {
-                    TextField("Type a message", text: $messageInput, onCommit: {
-                        DispatchQueue.main.async {
-                            sendMessage()
-                        }
-                    })
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-                    .focused($textFieldIsFocused)
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
                     
-                    Button(action: {
-                        sendMessage()
-                    }) {
-                        Image(systemName: "arrowshape.turn.up.right.fill")
+                    HStack {
+                        TextField("Type a message", text: $messageInput, onCommit: {
+                            DispatchQueue.main.async {
+                                sendMessage()
+                            }
+                        })
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                        .focused($textFieldIsFocused)
+                        
+                        Button(action: {
+                            sendMessage()
+                        }) {
+                            Image(systemName: "arrowshape.turn.up.right.fill")
+                        }
+                        .padding(.trailing)
                     }
-                    .padding(.trailing)
+                    .padding(.bottom)
                 }
-                .padding(.bottom)
-            }
-            .navigationBarItems(trailing:
-                                    Button(action: {
-                isSettingsVisible.toggle()
-            }) {
-                Image(systemName: "gear")
-            }
-                                
-            )
-            // TODO: Remove this stuff
-            // TODO: Probably make the settings sheet not be a sheet?
-            // TODO: ^ Dunno navigation instead? We shall see about it.
-            /*.sheet(isPresented: $isTestViewVisible) {
-             TestView(isTestViewVisible: $isTestViewVisible)
-             }*/
-            .sheet(isPresented: $isSettingsVisible) {
-                SettingsView(isSettingsVisible: $isSettingsVisible).onDisappear() {
-                    // TODO: When we close settings we scroll down, because the keyboard might screw up the scroll position, lol :|
-                    scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
+                .navigationBarItems(
+                    leading: Button(action: {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            isPreviewViewVisible.toggle()
+                        }
+                    }) {
+                        Image(systemName: "menucard") //sidebar.left
+                    },
+                    
+                    trailing: Button(action: {
+                        isSettingsVisible.toggle()
+                    }) {
+                        Image(systemName: "gear")
+                    }
+                    
+                )
+                // TODO: Remove this stuff
+                // TODO: Probably make the settings sheet not be a sheet?
+                // TODO: ^ Dunno navigation instead? We shall see about it.
+                .sheet(isPresented: $isPreviewViewVisible){
+                    PreviewView(isPreviewViewVisible: $isPreviewViewVisible, imageURL: $currentPreviewURL)
                 }
-            }.navigationTitle("iLounge")
+                .sheet(isPresented: $isTestViewVisible) {
+                    TestView(isTestViewVisible: $isTestViewVisible)
+                }
+                .sheet(isPresented: $isSettingsVisible) {
+                    SettingsView(isSettingsVisible: $isSettingsVisible).onDisappear() {
+                        // TODO: When we close settings we scroll down, because the keyboard might screw up the scroll position, lol :|
+                        scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
+                    }
+                }.navigationTitle("iLounge")
+            }
+            .scrollDismissesKeyboard(.interactively)
         }
     }
     
@@ -129,55 +170,47 @@ struct ContentView: View {
         textFieldIsFocused = true
     }
     
-    func configureSocketIO() {
-        print("Configure SocketIO called...")
-        var proto = "ws"
-        if useSslSetting == true {
-            proto = "wss"
-        }
-        
-        let loungeUrlFormatted =  "\(proto)://\(hostnameSetting)/\(portSetting)"
-        print("The Lounge URL is \(loungeUrlFormatted)")
-        
-        //socketMan = SocketManager(socketURL: URL(string: hostnameSetting)!)
-        
-        /* = SocketManager(socketURL: URL(string: "ws://127.0.0.2:9000/")!, config: [.log(true)])
-        
-        socketMan?.defaultSocket.on(clientEvent: .connect) { _, _ in
-                   print("Socket connected")
-               }
-               
-        socketMan?.defaultSocket.on("message") { data, ack in
-                   if let message = data.first as? String {
-                       entries.append(message)
-                   }
-               }
-        socketMan?.defaultSocket.on("error") { data, ack in
-            if let error = data.first as? String {
-                print("Socket error: \(error)")
+    func findFirstLinkRange(in text: String) -> Range<String.Index>? {
+        do {
+            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            if let match = detector.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text)) {
+                if let range = Range(match.range, in: text) {
+                    return range
+                }
             }
+        } catch {
+            print("Error: \(error.localizedDescription)")
         }
-               
-        socketMan?.connect()*/
+        return nil
     }
     
+    func isImage(text: String) -> Bool {
+        /* A dumb way to check if URL could be an image to open in a preview instead of the web browser */
+        let letImagePattern = #"(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\.(?:jpg|jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?"#
+        if text.range(of: letImagePattern, options: .regularExpression) != nil {
+            return true
+        }
+        return false
+    }
 }
 
 struct TestView: View {
     @Binding var isTestViewVisible: Bool
-    let baseText = "apple banana pear orange lemon"
+    private let width = UIScreen.main.bounds.width - 100
+    let baseText = "apple http://google.com pear orange lemon"
     let baseUrl = "https://github.com/search/repositories?q="
     
     var body: some View {
-        /*let clickableText = baseText.split(separator: " ").map{ "[\($0)](\(baseUrl)\($0))" }
+        
+        let clickableText = baseText.split(separator: " ").map{ "[\($0)](\(baseUrl)\($0))" }
         ForEach(clickableText, id: \.self) { txt in
             let attributedString = try! AttributedString(markdown: txt)
             Text(attributedString)
                 .environment(\.openURL, OpenURLAction { url in
-                    print("---> link actioned: \(txt.split(separator: "=").last)" )
+                    print("---> link actioned: \(String(describing: txt.split(separator: "=").last))" )
                     return .systemAction
                 })
-        }*/
+        }
         ZStack {
                     Color.gray.opacity(0.5)
                         .onTapGesture {
@@ -194,80 +227,14 @@ struct TestView: View {
                         Spacer()
                     }
                 }
-    }
-}
-
-struct SettingsView: View {
-    @Binding var isSettingsVisible: Bool
-    // Connection settings
-    @AppStorage("loungeHostname") private var hostnameSetting: String = ""
-    @AppStorage("loungePort") private var portSetting: String = "8080" // TODO: This is a String because Integer hated me, look into it again
-    @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
-    // Display settings
-    @AppStorage("loungeShowTimestamps") private var showTimestampsSetting: Bool = false
-    
-    var body: some View {
-        NavigationStack {
-            List {
-                Section(header: Text("Connection Settings")) {
-                    HStack {
-                        Text("Hostname")
-                        Spacer()
-                        TextField("Enter the hostname of your The Lounge instance", text: $hostnameSetting)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    HStack {
-                        Text("Port")
-                        Spacer()
-                        TextField("Enter the port of your The Lounge instance", text: $portSetting)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    HStack {
-                        Text("Use SSL")
-                        Spacer()
-                        Toggle("", isOn: $useSslSetting)
-                    }
-                }
-                
-                Section(header: Text("Display Settings")) {
-                    HStack {
-                        Text("Timestamp format")
-                        Spacer()
-                        TextField("hh:mm:ss", text: $hostnameSetting) // TODO: FIXME actual binding
-                    }
-                    HStack {
-                        Text("Show timestamps")
-                        Spacer()
-                        Toggle("", isOn: $showTimestampsSetting)
-                    }
-                    HStack {
-                        Text("Show join/part")
-                        Spacer()
-                        Toggle("", isOn: $showTimestampsSetting) // TODO: FIXME actual binding
-                    }
-                }
-            }.listStyle(GroupedListStyle())  
-            .navigationBarTitle("Settings")
-            .navigationBarItems(trailing: Button(action: {
-                isSettingsVisible.toggle()
-                saveSettings()
-            }) {
-                Text("Done")
-            })
-        }
-    }
-    
-    func saveSettings() {
-        UserDefaults.standard.set(hostnameSetting, forKey: "loungeHostname")
-        UserDefaults.standard.set(portSetting, forKey: "loungePort")
-        UserDefaults.standard.set(useSslSetting, forKey: "loungeUseSsl")
         
-        UserDefaults.standard.set(showTimestampsSetting, forKey: "loungeShowTimestamps")
+        VStack {
+            Text(.init("Ahoj [blabla](https://google.com)"))
+            Color.blue
+        }
+        .frame(width: self.width)
     }
-    
 }
-
-
 
 class SocketManagerWrapper: ObservableObject {
     @Published var messages: [String] = [] // TODO: Make this into a proper Message Model
@@ -284,24 +251,33 @@ class SocketManagerWrapper: ObservableObject {
         var proto = "ws"
         if useSslSetting {
             proto = "wss"
+            proto = "https"
         }
-        let formattedSocketURL = "\(proto)://\(hostnameSetting):\(portSetting)/"
-        print("URL is \(formattedSocketURL)")
+        if let formattedSocketURL = URL(string:"\(proto)://\(hostnameSetting):\(portSetting)/") {
+            print("URL is \(formattedSocketURL)")
+            socket = SocketManager(socketURL: formattedSocketURL, config: [.log(false), .forceWebsockets(true)])
+            DispatchQueue.main.async { [self] in
+                configureSocket()
+            }
+        }
+        else {
+            print("SOCKET FAILED because WRONG HOSTNAME") // TODO: uhh
+            self.messages.append("Socket connection failed, wrong hostname probs bro lol") // TODO: ^
+        }
         
-        socket = SocketManager(socketURL: URL(string: formattedSocketURL)!, config: [.log(false), .forceWebsockets(true)])
-        configureSocket()
+        
     }
     
     func sendMessage(message: String, channel_id: Int = 2) {
-        // "input",
-        //{"target": chan_id, "text": "ahojky uz jsem tady taky!!!"}
+        // TODO: Un-hardcode target, load from the buffer model that we want to send to the "current buffer"
         let msgToSend = ["target": channel_id, "text": message] as [String : Any]
         socket?.defaultSocket.emit("input", msgToSend)
     }
     
     func parseTimestamp(isoDate: String) -> Date? {
+        // TODO: Move out of here to some utils class or something
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         if let date = dateFormatter.date(from:isoDate) {
             return date
@@ -310,20 +286,37 @@ class SocketManagerWrapper: ObservableObject {
         }
     }
     
+    func replaceLinksWithMarkdownHyperlinks(origMsgText: String) -> String {
+        let urlPattern = #"((?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+)"#
+        let messageTextWithMarkdown = origMsgText.replacingOccurrences(of: urlPattern, with: "[$1]($1)", options: .regularExpression)
+        print(messageTextWithMarkdown)
+        
+        return messageTextWithMarkdown
+    }
+    
     private func configureSocket() {
+        
+        // TODO: Use for debugging to get all the events handled
+        //socket?.defaultSocket.onAny {print("Got event: \($0.event), with items: \($0.items)")}
+        socket?.defaultSocket.on(clientEvent: .statusChange) { data, ack in
+            print("Status change", data, ack)
+            
+            self.messages.append("Status: \(data)")
+        }
+        
         socket?.defaultSocket.on(clientEvent: .connect) { data, ack in
             print("Socket connected", data, ack)
-           
         }
         
         socket?.defaultSocket.on("msg") { [self] data, ack in
             if let message = data.first as? Dictionary<String,Any>,
                let msg = message["msg"] as? Dictionary<String,Any> {
                 // TODO: ID - good for the model I wanna make later, I guess :-)
-                let _ = message["id"] as! Int
+                //let _ = message["id"] as! Int // except it isn't in the "msg" message? lol
                 
                 // Text
                 let messageText = msg["text"] as! String
+                let messageTextWithMarkdown = replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
                 
                 // Timestamp
                 let messageTsStr = msg["time"] as! String
@@ -334,13 +327,19 @@ class SocketManagerWrapper: ObservableObject {
                     outputFormatter.dateFormat = "HH:mm:ss"
                     messageTs = outputFormatter.string(from: messageDateUTC)
                 }
+                
                 // From
-                let messageFrom = msg["from"] as! Dictionary<String, Any>
-                let messageNick = messageFrom["nick"] as! String
+                var messageFinal: String;
+                if let messageFrom = msg["from"] as? Dictionary<String, Any>,
+                   let messageNick = messageFrom["nick"] as? String {
+                    messageFinal = "\(messageTs) <\(messageNick)> \(messageTextWithMarkdown)"
+                }
+                else {
+                    messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
+                }
                 
                 // Final message format
                 // TODO: Proper models
-                let messageFinal = "\(messageTs) <\(messageNick)> \(messageText)"
                 self.messages.append(messageFinal)
             }
         }
@@ -360,8 +359,6 @@ class SocketManagerWrapper: ObservableObject {
                 self.messages.append(String(describing:data))
             }
         }
-        // Using a shorthand parameter name for closures
-        //socket?.defaultSocket.onAny {print("Got event: \($0.event), with items: \($0.items)")}
         
         socket?.defaultSocket.on("init") {data, ack in
             //print("INIT \(String(describing:data))")
@@ -375,11 +372,12 @@ class SocketManagerWrapper: ObservableObject {
                             self.messages.append(String(describing: channel["name"]))
                             if let messages = channel["messages"] as? Array<Dictionary<String, Any>> {
                                 for message in messages {
-                                    // TODO: ID - good for the model I guess :-)
+                                    // TODO: ID - good for the future model I guess :-)
                                     let _ = message["id"] as! Int
                                     
                                     // Text
                                     let messageText = message["text"] as! String
+                                    let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
                                     
                                     // Timestamp
                                     let messageTsStr = message["time"] as! String
@@ -392,9 +390,17 @@ class SocketManagerWrapper: ObservableObject {
                                     }
                                     
                                     // From
-                                    let messageFrom = message["from"] as! Dictionary<String, Any>
-                                    let messageNick = messageFrom["nick"] as! String
-                                    let messageFinal = "\(messageTs) <\(messageNick)> \(messageText)"
+                                    var messageFinal: String;
+                                    if let messageFrom = message["from"] as? Dictionary<String, Any>,
+                                       let messageNick = messageFrom["nick"] as? String {
+                                        messageFinal = "\(messageTs) <\(messageNick)> \(messageTextWithMarkdown)"
+                                    }
+                                    else {
+                                        messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
+                                    }
+                                    
+                                    // Final message format
+                                    // TODO: Proper models
                                     self.messages.append(messageFinal)
                                 }
                             }
@@ -412,7 +418,8 @@ class SocketManagerWrapper: ObservableObject {
             socket?.defaultSocket.emit("auth:perform", swiftDict)
             
             if let message = data.first as? String {
-                self.messages.append(String(describing:data))
+                print("auth:start \(message)")
+                self.messages.append(String(describing:message))
             }
         }
         
