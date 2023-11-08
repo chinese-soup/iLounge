@@ -13,9 +13,13 @@ import CoreData
 struct ContentView: View {
     // TODO: Clean up these
     @State private var messageInput = ""
+
+    // Visibility
     @State private var isSettingsVisible = false
     @State private var isTestViewVisible = false
     @State private var isPreviewViewVisible = false
+    @State private var isBufferViewVisible = false
+
     @State public var scrollProxy: ScrollViewProxy? = nil
     @State private var selectedEntry: String? = nil
     
@@ -36,7 +40,7 @@ struct ContentView: View {
     @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
     
     // SocketIO manager, needs to be ObservedObject so that it doesn't get destroyed during the lifetime of the app
-    @ObservedObject var socketManager: SocketManagerWrapper //= SocketManagerWrapper(socketURL: "ws://127.0.0.2:9000/")
+    @ObservedObject var socketManager: SocketManagerWrapper
     
     // View's constructor
     init() {
@@ -44,6 +48,28 @@ struct ContentView: View {
         self.socketManager = SocketManagerWrapper()
     }
     
+    var bottomField: some View {
+        HStack {
+            TextField("Type a message", text: $messageInput) // TextEditor for multiline, but then I can't send lol
+                .onSubmit {
+                    DispatchQueue.main.async {
+                        sendMessage()
+                    }
+                }
+                .frame(maxHeight: 40)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+                .focused($textFieldIsFocused)
+
+            Button(action: {
+                sendMessage()
+            }) {
+                Image(systemName: "arrowshape.turn.up.right.fill")
+            }
+            .padding(.trailing)
+        }
+        .padding(.bottom)
+    }
     
     var body: some View {
         ZStack {
@@ -52,31 +78,39 @@ struct ContentView: View {
                     ScrollView {
                         ScrollViewReader { proxy in
                             VStack(alignment: .leading, spacing: 5) {
-                                ForEach(socketManager.messages, id: \.self) { msg in
-                                    Text(.init(msg)).id(msg) // id here is important for the scroll proxy to work apparently
-                                        .padding(.horizontal)
-                                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
-                                        //.textSelection(.enabled)
-                                        .environment(\.openURL, OpenURLAction { url in
-                                            handleUserClickedLink(url: url)
-                                            return .handled
-                                        })
-                                        /*.onTapGesture {
-                                            selectedEntry = msg
-                                            let pasteboard = UIPasteboard.general
-                                            pasteboard.string = msg
-                                           
-                                        }*/
-                                        .contextMenu {
-                                            Button {
-                                            } label: {
-                                                Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
-                                            }
-                                            Button {
-                                            } label: {
-                                                Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
-                                            }
+                                //ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
+                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self) { msg in
+                                    //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
+                                    HStack {
+                                        if let msgNick = msg.from {
+                                            Text(.init(msgNick.nick))
+                                                .padding(.horizontal)
+                                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
                                         }
+                                        Text(.init(msg.text)).id(msg) // id here is important for the scroll proxy to wok apparently
+                                            .padding(.horizontal)
+                                            .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
+                                        //.textSelection(.enabled)
+                                            .environment(\.openURL, OpenURLAction { url in
+                                                handleUserClickedLink(url: url)
+                                                return .handled
+                                            })
+                                        /*.onTapGesture {
+                                         selectedEntry = msg
+                                         let pasteboard = UIPasteboard.general
+                                         pasteboard.string = msg
+                                         }*/
+                                    }
+                                    .contextMenu {
+                                        Button {
+                                        } label: {
+                                            Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
+                                        }
+                                        Button {
+                                        } label: {
+                                            Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
+                                        }
+                                    }
                                 }
                             }
                             .onAppear {
@@ -90,31 +124,13 @@ struct ContentView: View {
                         }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity).scrollDismissesKeyboard(.interactively)
                     
-                    HStack {
-                        TextField("Type a message", text: $messageInput) // TextEditor for multiline, but then I can't send lol
-                            .onSubmit {
-                                DispatchQueue.main.async {
-                                    sendMessage()
-                                }
-                            }
-                            .frame(maxHeight: 40)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                            .focused($textFieldIsFocused)
-                            
-                        Button(action: {
-                            sendMessage()
-                        }) {
-                            Image(systemName: "arrowshape.turn.up.right.fill")
-                        }
-                        .padding(.trailing)
-                    }
-                    .padding(.bottom)
+                    bottomField
                 }
                 .navigationBarItems(
                     leading: Button(action: {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            isPreviewViewVisible.toggle()
+                            isBufferViewVisible.toggle()
+                            print("isBufferViewVisible = ", isBufferViewVisible)
                         }
                     }) {
                         Image(systemName: "menucard") //sidebar.left
@@ -144,6 +160,7 @@ struct ContentView: View {
                 }.navigationTitle("iLounge")
             }
             .scrollDismissesKeyboard(.interactively)
+            BufferView(isBufferViewVisible: $isBufferViewVisible, socketManager: socketManager)
         }
     }
     

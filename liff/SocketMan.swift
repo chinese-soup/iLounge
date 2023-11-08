@@ -14,6 +14,10 @@ import CoreData
 
 class SocketManagerWrapper: ObservableObject {
     @Published var messages: [String] = [] // TODO: Make this into a proper Message Model
+    
+    @Published var currentBuffer: Int = 0
+    
+    @Published var channelsStore: [Int: Channel] = [:]
     // TODO: OR well, make everything into models, really :--)
     // TODO: E.g. buffers (servers / channels)
     // TODO: E.g. NickList etc.
@@ -22,6 +26,7 @@ class SocketManagerWrapper: ObservableObject {
     @AppStorage("loungeHostname") private var hostnameSetting: String = "localhost"
     @AppStorage("loungePort") private var portSetting: String = "8080"
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
+    
     
     init() {
         var proto = "ws"
@@ -69,7 +74,35 @@ class SocketManagerWrapper: ObservableObject {
         
         return messageTextWithMarkdown
     }
-    
+
+    struct Channel: Hashable, Identifiable {
+        let id: Int
+        let chanId: Int
+        let chanName: String
+        let chanType: String
+        let topic: String
+        var messages: [Message]
+        let opened: Bool
+    }
+
+    struct Message: Hashable, Identifiable, Equatable {
+        let id: Int
+        let channelName: String
+        let showInActive: Bool
+        let error: String?
+        let text: String
+        let type: String
+        let timeOrig: String
+        let timeParsed: Optional<Date>
+        let highlight: Bool
+        let from: MessageFrom?
+    }
+
+    struct MessageFrom: Hashable {
+        let mode: String
+        let nick: String
+    }
+
     private func configureSocket() {
         
         // TODO: Use for debugging to get all the events handled
@@ -105,6 +138,7 @@ class SocketManagerWrapper: ObservableObject {
             // Types:
             // type: error
             // type: message
+            // type: quit
             // type:
             
             if let message = data.first as? Dictionary<String,Any>,
@@ -167,39 +201,58 @@ class SocketManagerWrapper: ObservableObject {
                 for network in networks {
                     if let channels = network["channels"] as? Array<Dictionary<String, Any>> {
                         for channel in channels {
-                            self.messages.append(String(describing: channel["name"]))
-                            if let messages = channel["messages"] as? Array<Dictionary<String, Any>> {
-                                for message in messages {
-                                    // TODO: ID - good for the future model I guess :-)
-                                    let _ = message["id"] as! Int
-                                    
-                                    // Text
-                                    let messageText = message["text"] as! String
-                                    let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
-                                    
-                                    // Timestamp
-                                    let messageTsStr = message["time"] as! String
-                                    var messageTs = messageTsStr
-                                    // If we can parse the timestamp, change it to correct format
-                                    if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
-                                        let outputFormatter = DateFormatter()
-                                        outputFormatter.dateFormat = "HH:mm:ss"
-                                        messageTs = outputFormatter.string(from: messageDateUTC)
+                            self.messages.append(String(describing: channel["name"])) //TODO: I should be able to deode this into `DeCodable` instead ... look into this (struct Channel)
+
+                            if let chanId = channel["id"] as? Int,
+                               let chanName = channel["name"] as? String,
+                               let chanTopic = channel["topic"] as? String,
+                               let chanType = channel["type"] as? String {
+                                let newChan = Channel(id: chanId, chanId: chanId, chanName: chanName, chanType: chanType, topic: chanTopic, messages: [], opened: false)
+                                self.channelsStore[newChan.chanId] = newChan
+
+                                if let messagesParsed = channel["messages"] as? Array<Dictionary<String, Any>> {
+                                    for message in messagesParsed {
+                                        // TODO: ID - good for the future model I guess :-)
+                                        let messageId = message["id"] as! Int
+
+                                        // Text
+                                        let messageText = message["text"] as! String
+                                        let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
+
+                                        // Timestamp
+                                        let messageTsStr = message["time"] as! String
+                                        var messageTs = messageTsStr
+                                        // If we can parse the timestamp, change it to correct format
+                                        if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
+                                            let outputFormatter = DateFormatter()
+                                            outputFormatter.dateFormat = "HH:mm:ss"
+                                            messageTs = outputFormatter.string(from: messageDateUTC)
+                                        }
+
+                                        let messageType = message["type"] as! String
+
+                                        // From
+                                        var messageFinal: String // TODO: get rid of
+                                        var messageFromObj: MessageFrom?
+                                        if let msgfrom = message["from"] as? Dictionary<String, Any>,
+                                           let messageFromNick = msgfrom["nick"] as? String,
+                                           let messageFromMode = msgfrom["mode"] as? String {
+                                            //messageFinal = "\(messageTs) <\(messageNick)> \(
+                                            //MessageFrom(   )
+                                            messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
+                                        }
+                                        else {
+                                            messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
+                                        }
+
+                                        // Final message format
+                                        // TODO: Proper model that is decodable!!!
+
+                                        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: nil, highlight: false, from: messageFromObj)
+                                        print("Appending \(newMessage) .--- ")
+                                        self.channelsStore[newChan.chanId]?.messages.append(newMessage)
+                                        //self.messages.append(messageFinal)
                                     }
-                                    
-                                    // From
-                                    var messageFinal: String;
-                                    if let messageFrom = message["from"] as? Dictionary<String, Any>,
-                                       let messageNick = messageFrom["nick"] as? String {
-                                        messageFinal = "\(messageTs) <\(messageNick)> \(messageTextWithMarkdown)"
-                                    }
-                                    else {
-                                        messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
-                                    }
-                                    
-                                    // Final message format
-                                    // TODO: Proper models
-                                    self.messages.append(messageFinal)
                                 }
                             }
                         }
