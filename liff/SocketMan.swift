@@ -137,11 +137,7 @@ class SocketManagerWrapper: ObservableObject {
         let messageTsStr = message["time"] as! String
         var messageTs: String
         // If we can parse the timestamp, change it to correct format
-        if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
-            let outputFormatter = DateFormatter()
-            outputFormatter.dateFormat = "HH:mm:ss"
-            messageTs = outputFormatter.string(from: messageDateUTC)
-        }
+        let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr)
 
         let messageType = message["type"] as! String
 
@@ -157,7 +153,7 @@ class SocketManagerWrapper: ObservableObject {
         // Final message format
         // TODO: Proper model that is decodable!!!
 
-        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: nil, highlight: false, from: messageFromObj)
+        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: messageDateUTC ?? nil, highlight: false, from: messageFromObj)
 
         return newMessage
     }
@@ -317,11 +313,14 @@ class SocketManagerWrapper: ObservableObject {
                                         let messageTsStr = message["time"] as! String
                                         var messageTs = messageTsStr
                                         // If we can parse the timestamp, change it to correct format
-                                        if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
+                                        /*if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
                                             let outputFormatter = DateFormatter()
                                             outputFormatter.dateFormat = "HH:mm:ss"
                                             messageTs = outputFormatter.string(from: messageDateUTC)
-                                        }
+                                        }*/
+
+                                        // If we can parse the timestamp, change it to correct format
+                                        let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr)
 
                                         let messageType = message["type"] as! String
 
@@ -342,7 +341,7 @@ class SocketManagerWrapper: ObservableObject {
                                         // Final message format
                                         // TODO: Proper model that is decodable!!!
 
-                                        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: nil, highlight: false, from: messageFromObj)
+                                        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: messageDateUTC, highlight: false, from: messageFromObj)
                                         print("Appending \(newMessage) .--- ")
                                         self.channelsStore[newChan.chanId]?.messages.append(newMessage)
                                         //self.messages.append(messageFinal)

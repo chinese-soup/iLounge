@@ -20,9 +20,11 @@ struct SettingsView: View {
 
     // Display settings
     @AppStorage("loungeShowTimestamps") private var showTimestampsSetting: Bool = true
-    // TODO: ADD <<<< AppStorage for Timestamp format here on this line !!!!!!
+    @AppStorage("loungeTimestampFormat") private var timestampFormatSetting: String = "HH:mm:ss"
+
     @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
     @AppStorage("loungeShowJoinPart") private var showJoinPartSetting: Bool = true
+
     @AppStorage("loungeNickLength") private var nickLengthSetting: Int = 0
 
     // Advanced settings TODO: Get rid of WS/Polling, automagically do this
@@ -60,7 +62,8 @@ struct SettingsView: View {
                     HStack {
                         Text("Timestamp format")
                         Spacer()
-                        TextField("hh:mm:ss", text: $hostnameSetting) // TODO: FIXME actual binding
+                        TextField("HH:mm:ss", text: $timestampFormatSetting)
+                            .multilineTextAlignment(.trailing)
                     }
                     HStack {
                         Text("Use monospace font")

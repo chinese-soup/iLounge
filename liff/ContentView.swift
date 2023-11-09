@@ -37,8 +37,12 @@ struct ContentView: View {
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false // TODO: Unused here?
 
     // Display settings
+    @AppStorage("loungeShowTimestamps") private var showTimestampsSetting: Bool = true
+    @AppStorage("loungeTimestampFormat") private var timestampFormatSetting: String = "hh:mm:ss"
+
     @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
     @AppStorage("loungeShowJoinPart") private var showJoinPartSetting: Bool = true
+
     @AppStorage("loungeNickLength") private var nickLengthSetting: Int = 0
 
 
@@ -56,6 +60,12 @@ struct ContentView: View {
             return origNickname
         }
         return origNickname.count > nickLengthSetting ? String(origNickname.prefix(nickLengthSetting)) : origNickname
+    }
+
+    func formatTimestamp(parsedDate: Date) -> String {
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = timestampFormatSetting
+        return outputFormatter.string(from: parsedDate)
     }
 
     var bottomField: some View {
@@ -98,13 +108,24 @@ struct ContentView: View {
                                 ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self.text) { msg in
                                     //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
                                     HStack {
+                                        if showTimestampsSetting {
+                                            if let msgParsedDate = msg.timeParsed {
+                                                Text(formatTimestamp(parsedDate: msgParsedDate))
+                                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                                    .foregroundColor(.gray)
+                                            } else {
+                                                Text("Unknown TS")
+                                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                            }
+                                        }
+
                                         if let msgNick = msg.from {
                                             //Text(msgNick.nick.count > nickLengthSetting ? String(msgNick.nick.prefix(nickLengthSetting)) : msgNick.nick)
                                             Text(truncateNickname(origNickname: msgNick.nick))
-                                                //.padding(.horizontal)
-                                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
+                                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
                                         } else {
                                             Text("SYSTEM")
+                                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
                                         }
 
                                         Text(.init(msg.text)).id(msg.id) // id here is important for the scroll proxy to wok apparently
