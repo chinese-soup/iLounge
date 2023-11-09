@@ -16,13 +16,19 @@ struct SettingsView: View {
     @AppStorage("loungeHostname") private var hostnameSetting: String = ""
     @AppStorage("loungePort") private var portSetting: String = "8080" // TODO: This is a String because Integer hated me, look into it again
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
-    
+
+
     // Display settings
     @AppStorage("loungeShowTimestamps") private var showTimestampsSetting: Bool = true
     // TODO: ADD <<<< AppStorage for Timestamp format here on this line !!!!!!
     @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
     @AppStorage("loungeShowJoinPart") private var showJoinPartSetting: Bool = true
-    
+    @AppStorage("loungeNickLength") private var nickLengthSetting: Int = 0
+
+    // Advanced settings TODO: Get rid of WS/Polling, automagically do this
+    @AppStorage("loungeForceWS") private var forceWebsocketsSetting: Bool = false
+    @AppStorage("loungeForcePoll") private var forcePollingSetting: Bool = false
+
     var body: some View {
         NavigationStack {
             List {
@@ -45,7 +51,6 @@ struct SettingsView: View {
                         Toggle("", isOn: $useSslSetting)
                     }
                 }
-                
                 Section(header: Text("Display Settings")) {
                     HStack {
                         Text("Show timestamps")
@@ -66,6 +71,23 @@ struct SettingsView: View {
                         Text("Show join/part")
                         Spacer()
                         Toggle("", isOn: $showJoinPartSetting) // TODO: FIXME actual binding
+                    }
+                    HStack {
+                        Text("Align nicknames")
+                        Spacer()
+                        Stepper("\(nickLengthSetting == 0 ? "(disabled)" : "to \(nickLengthSetting) characters")", value: $nickLengthSetting, in: 0...15)
+                    }
+                }
+                Section(header: Text("Advanced Settings")) {
+                    HStack {
+                        Text("Force websockets")
+                        Spacer()
+                        Toggle("", isOn: $forceWebsocketsSetting)
+                    }
+                    HStack {
+                        Text("Force polling")
+                        Spacer()
+                        Toggle("", isOn: $forcePollingSetting)
                     }
                 }
             }.listStyle(GroupedListStyle())

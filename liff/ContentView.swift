@@ -19,15 +19,14 @@ struct ContentView: View {
     @State private var isTestViewVisible = false
     @State private var isPreviewViewVisible = false
     @State private var isBufferViewVisible = false
+    @FocusState private var textFieldIsFocused: Bool
 
     @State public var scrollProxy: ScrollViewProxy? = nil
     @State private var selectedEntry: String? = nil
-    
+
     @State private var currentPreviewURL = "https://picsum.photos/600" // TODO: Remove
-    
-    // Focus state to keep the text input field focused after sending a message
-    @FocusState private var textFieldIsFocused: Bool
-    
+
+    // Focus state to keep the text input field focused after send
     //@ObservedObject var webSocketManager = WebSocketManager(password: "")
     
     @State private var messageToSend = ""
@@ -36,9 +35,13 @@ struct ContentView: View {
     @AppStorage("loungeHostname") private var hostnameSetting: String = "" // TODO: Unused here?
     @AppStorage("loungePort") private var portSetting: String = "8080" // TODO: Unused here?
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false // TODO: Unused here?
-    
+
+    // Display settings
     @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
-    
+    @AppStorage("loungeShowJoinPart") private var showJoinPartSetting: Bool = true
+    @AppStorage("loungeNickLength") private var nickLengthSetting: Int = 0
+
+
     // SocketIO manager, needs to be ObservedObject so that it doesn't get destroyed during the lifetime of the app
     @ObservedObject var socketManager: SocketManagerWrapper
     
@@ -47,7 +50,14 @@ struct ContentView: View {
         print("Hello from init()")
         self.socketManager = SocketManagerWrapper()
     }
-    
+
+    func truncateNickname(origNickname: String) -> String {
+        if nickLengthSetting == 0 {
+            return origNickname
+        }
+        return origNickname.count > nickLengthSetting ? String(origNickname.prefix(nickLengthSetting)) : origNickname
+    }
+
     var bottomField: some View {
         HStack {
             TextField("Type a message", text: $messageInput) // TextEditor for multiline, but then I can't send lol
@@ -70,7 +80,7 @@ struct ContentView: View {
         }
         .padding(.bottom)
     }
-    
+
     var body: some View {
         ZStack {
             NavigationStack {
@@ -83,14 +93,18 @@ struct ContentView: View {
                                     //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
                                     HStack {
                                         if let msgNick = msg.from {
-                                            Text(.init(msgNick.nick))
-                                                .padding(.horizontal)
+                                            //Text(msgNick.nick.count > nickLengthSetting ? String(msgNick.nick.prefix(nickLengthSetting)) : msgNick.nick)
+                                            Text(truncateNickname(origNickname: msgNick.nick))
+                                                //.padding(.horizontal)
                                                 .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
+                                        } else {
+                                            Text("SYSTEM")
                                         }
-                                        Text(.init(msg.text)).id(msg) // id here is important for the scroll proxy to wok apparently
+
+                                        Text(.init(msg.text)).id(msg.id) // id here is important for the scroll proxy to wok apparently
                                             .padding(.horizontal)
                                             .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
-                                        //.textSelection(.enabled)
+                                            //.textSelection(.enabled)
                                             .environment(\.openURL, OpenURLAction { url in
                                                 handleUserClickedLink(url: url)
                                                 return .handled
@@ -116,9 +130,14 @@ struct ContentView: View {
                             .onAppear {
                                 scrollProxy = proxy
                             }
-                            .onChange(of: socketManager.messages) {
+                            .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
                                 withAnimation {
-                                    scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
+                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last, anchor: .bottom)
+                                }
+                            }
+                            .onChange(of: socketManager.currentBuffer) {
+                                withAnimation {
+                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last, anchor: .bottom)
                                 }
                             }
                         }
@@ -157,7 +176,7 @@ struct ContentView: View {
                         // TODO: When we close settings we scroll down, because the keyboard might screw up the scroll position, lol :|
                         scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
                     }
-                }.navigationTitle("iLounge")
+                }.navigationTitle(socketManager.channelsStore[socketManager.currentBuffer]?.chanName ?? "iLounge")
             }
             .scrollDismissesKeyboard(.interactively)
             BufferView(isBufferViewVisible: $isBufferViewVisible, socketManager: socketManager)

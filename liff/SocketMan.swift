@@ -27,7 +27,10 @@ class SocketManagerWrapper: ObservableObject {
     @AppStorage("loungePort") private var portSetting: String = "8080"
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
     
-    
+    // Advanced settings TODO: Get rid of WS/Polling, automagically do this
+    @AppStorage("loungeForceWS") private var forceWebsocketsSetting: Bool = false
+    @AppStorage("loungeForcePoll") private var forcePollingSetting: Bool = false
+
     init() {
         var proto = "ws"
         if useSslSetting {
@@ -36,7 +39,7 @@ class SocketManagerWrapper: ObservableObject {
         }
         if let formattedSocketURL = URL(string:"\(proto)://\(hostnameSetting):\(portSetting)/") {
             print("URL is \(formattedSocketURL)")
-            socket = SocketManager(socketURL: formattedSocketURL, config: [.log(true), .forceWebsockets(true)])
+            socket = SocketManager(socketURL: formattedSocketURL, config: [.log(true), .forceWebsockets(forceWebsocketsSetting), .forcePolling(forcePollingSetting)])
             DispatchQueue.main.async { [self] in
                 configureSocket()
             }
@@ -51,7 +54,7 @@ class SocketManagerWrapper: ObservableObject {
     
     func sendMessage(message: String, channel_id: Int = 2) {
         // TODO: Un-hardcode target, load from the buffer model that we want to send to the "current buffer"
-        let msgToSend = ["target": channel_id, "text": message] as [String : Any]
+        let msgToSend = ["target": currentBuffer, "text": message] as [String : Any]
         socket?.defaultSocket.emit("input", msgToSend)
     }
     
@@ -264,8 +267,8 @@ class SocketManagerWrapper: ObservableObject {
         socket?.defaultSocket.on("auth:start") { [self] data, ack in
             // we got  auth start's exgon gonan give it to em
             print("AUTH START BRo message \(String(describing:data))")
-            let swiftDict: [String: String] = ["user": "polivka", "password": "asdf"]
-            
+            let swiftDict: [String: String] = ["user": "polivka", "password": "asdfasdf"]
+
             socket?.defaultSocket.emit("auth:perform", swiftDict)
             
             if let message = data.first as? String {
