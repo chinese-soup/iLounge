@@ -39,7 +39,7 @@ class SocketManagerWrapper: ObservableObject {
         }
         if let formattedSocketURL = URL(string:"\(proto)://\(hostnameSetting):\(portSetting)/") {
             print("URL is \(formattedSocketURL)")
-            socket = SocketManager(socketURL: formattedSocketURL, config: [.log(true), .forceWebsockets(forceWebsocketsSetting), .forcePolling(forcePollingSetting)])
+            socket = SocketManager(socketURL: formattedSocketURL, config: [.log(false), .forceWebsockets(forceWebsocketsSetting), .forcePolling(forcePollingSetting)])
             DispatchQueue.main.async { [self] in
                 configureSocket()
             }
@@ -57,7 +57,15 @@ class SocketManagerWrapper: ObservableObject {
         let msgToSend = ["target": currentBuffer, "text": message] as [String : Any]
         socket?.defaultSocket.emit("input", msgToSend)
     }
-    
+
+    func openBuffer(channel_id: Int) {
+        socket?.defaultSocket.emit("open", channel_id)
+        let lastMessageId = channelsStore[channel_id]?.messages.last?.id
+        print("LASt mesasged id = \(String(describing: lastMessageId))")
+        let moreMessagesRequest = ["target": channel_id, "lastId": lastMessageId, "condensed": false] as [String : Any]
+        socket?.defaultSocket.emit("more", moreMessagesRequest)
+    }
+
     func parseTimestamp(isoDate: String) -> Date? {
         // TODO: Move out of here to some utils class or something
         let dateFormatter = DateFormatter()
@@ -119,7 +127,69 @@ class SocketManagerWrapper: ObservableObject {
         socket?.defaultSocket.on(clientEvent: .connect) { data, ack in
             print("Socket connected", data, ack)
         }
-        
+
+        socket?.defaultSocket.on("more") { [self] data, ack in
+            if let parsedData = data.first as? Dictionary<String,Any> {
+                print("more", parsedData)
+                if let channelId = parsedData["chan"] as? Int,
+                   let totalMessages = parsedData["totalMessages"] as? Int {
+                    print("total messages = \(totalMessages), chanid = \(channelId)")
+                    if let messagesParsed = parsedData["messages"] as? Array<Dictionary<String, Any>> {
+                        print("messages parsed= \(messagesParsed.count)")
+
+                        for message in messagesParsed {
+                            print("More, message = ")
+                            // TODO: ID - good for the future model I guess :-)
+                            let messageId = message["id"] as! Int
+
+                            // Text
+                            let messageText = message["text"] as! String
+                            let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
+
+                            // Timestamp
+                            let messageTsStr = message["time"] as! String
+                            var messageTs = messageTsStr
+                            // If we can parse the timestamp, change it to correct format
+                            if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
+                                let outputFormatter = DateFormatter()
+                                outputFormatter.dateFormat = "HH:mm:ss"
+                                messageTs = outputFormatter.string(from: messageDateUTC)
+                            }
+
+                            let messageType = message["type"] as! String
+
+                            // From
+                            var messageFinal: String // TODO: get rid of
+                            var messageFromObj: MessageFrom?
+                            if let msgfrom = message["from"] as? Dictionary<String, Any>,
+                               let messageFromNick = msgfrom["nick"] as? String,
+                               let messageFromMode = msgfrom["mode"] as? String {
+                                //messageFinal = "\(messageTs) <\(messageNick)> \(
+                                //MessageFrom(   )
+                                messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
+                            }
+                            else {
+                                messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
+                            }
+
+                            // Final message format
+                            // TODO: Proper model that is decodable!!!
+
+                            let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: nil, highlight: false, from: messageFromObj)
+                            print("Appending \(newMessage) .--- ")
+                            self.channelsStore[channelId]?.messages.append(newMessage)
+                        }
+                    }
+                }
+
+
+            }
+        }
+
+        socket?.defaultSocket.on("names") { [self] data, ack in
+            // TODO: names
+        }
+
         socket?.defaultSocket.on("msg") { [self] data, ack in
             /* example msg
              msg =     {

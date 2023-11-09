@@ -89,7 +89,7 @@ struct ContentView: View {
                         ScrollViewReader { proxy in
                             VStack(alignment: .leading, spacing: 5) {
                                 //ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
-                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self) { msg in
+                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self.text) { msg in
                                     //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
                                     HStack {
                                         if let msgNick = msg.from {

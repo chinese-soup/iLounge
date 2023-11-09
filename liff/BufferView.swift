@@ -44,8 +44,9 @@ struct BufferView: View {
                             Button {
                                 print("Ahoj \(key)")
                                 isBufferViewVisible.toggle()
+                                socketManager.openBuffer(channel_id: key)
                                 socketManager.currentBuffer = key
-                                
+
                             } label: {
                                 Label("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")", systemImage: "fibrechannel")
                                     .bold()
