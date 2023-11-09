@@ -105,7 +105,7 @@ struct ContentView: View {
                         ScrollViewReader { proxy in
                             VStack(alignment: .leading, spacing: 5) {
                                 //ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
-                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self.text) { msg in
+                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self.id) { msg in
                                     //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
                                     HStack {
                                         if showTimestampsSetting {
@@ -157,14 +157,15 @@ struct ContentView: View {
                             .onAppear {
                                 scrollProxy = proxy
                             }
+                            // TODO: Auto-scroll needs some love and care
                             .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
                                 withAnimation {
-                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last, anchor: .bottom)
+                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                                 }
                             }
                             .onChange(of: socketManager.currentBuffer) {
                                 withAnimation {
-                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last, anchor: .bottom)
+                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                                 }
                             }
                         }
