@@ -60,6 +60,12 @@ struct ContentView: View {
 
     var bottomField: some View {
         HStack {
+            Button(action: {
+                print("Tab complete")
+            }) {
+                Image(systemName: "arrow.right.to.line")
+            }.padding(.leading)
+
             TextField("Type a message", text: $messageInput) // TextEditor for multiline, but then I can't send lol
                 .onSubmit {
                     DispatchQueue.main.async {
@@ -68,7 +74,7 @@ struct ContentView: View {
                 }
                 .frame(maxHeight: 40)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+                // .padding(.trailing) // TODO: Leave padding only on Buttons around the Textbox?
                 .focused($textFieldIsFocused)
 
             Button(action: {

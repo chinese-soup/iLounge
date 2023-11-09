@@ -60,9 +60,16 @@ class SocketManagerWrapper: ObservableObject {
 
     func openBuffer(channel_id: Int) {
         socket?.defaultSocket.emit("open", channel_id)
-        let lastMessageId = channelsStore[channel_id]?.messages.last?.id
+
+        // TODO: !!! This has the side-effect of the first message that appears from "init" (the thing we get before we even send "more")
+        // TODO: to be on the top of the history,
+        // TODO: even though it should be the latest message
+
+        // TODO: This currently DUPLICATES MESSAGES UPON CHANGING TO THE BUFFER (last X mesagess repeat)
+        let lastMessageId = channelsStore[channel_id]?.messages.last?.id as? Int
         print("LASt mesasged id = \(String(describing: lastMessageId))")
-        let moreMessagesRequest = ["target": channel_id, "lastId": lastMessageId, "condensed": false] as [String : Any]
+
+        let moreMessagesRequest = ["target": channel_id, "lastId": lastMessageId ?? 0, "condensed": false] as [String : Any]
         socket?.defaultSocket.emit("more", moreMessagesRequest)
     }
 
@@ -100,18 +107,59 @@ class SocketManagerWrapper: ObservableObject {
         let id: Int
         let channelName: String
         let showInActive: Bool
-        let error: String?
+        let error: String? // optional!
         let text: String
         let type: String
         let timeOrig: String
         let timeParsed: Optional<Date>
         let highlight: Bool
         let from: MessageFrom?
+        // missing:
+        // let self: Bool
+        // let highlight: Int
+        // let users: Array<?????> // users that the text highlighted
+
     }
 
     struct MessageFrom: Hashable {
         let mode: String
         let nick: String
+    }
+
+    func parseMessageData(message: Dictionary<String, Any>) -> Message? {
+        let messageId = message["id"] as! Int
+
+        // Text
+        let messageText = message["text"] as! String
+        let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
+
+        // Timestamp
+        let messageTsStr = message["time"] as! String
+        var messageTs: String
+        // If we can parse the timestamp, change it to correct format
+        if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "HH:mm:ss"
+            messageTs = outputFormatter.string(from: messageDateUTC)
+        }
+
+        let messageType = message["type"] as! String
+
+        // From
+        var messageFromObj: MessageFrom?
+        if let msgfrom = message["from"] as? Dictionary<String, Any>,
+           let messageFromNick = msgfrom["nick"] as? String,
+           let messageFromMode = msgfrom["mode"] as? String {
+            //messageFinal = "\(messageTs) <\(messageNick)> \(
+            //MessageFrom(   )
+            messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
+        }
+        // Final message format
+        // TODO: Proper model that is decodable!!!
+
+        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: nil, highlight: false, from: messageFromObj)
+
+        return newMessage
     }
 
     private func configureSocket() {
@@ -139,45 +187,11 @@ class SocketManagerWrapper: ObservableObject {
 
                         for message in messagesParsed {
                             print("More, message = ")
-                            // TODO: ID - good for the future model I guess :-)
-                            let messageId = message["id"] as! Int
-
-                            // Text
-                            let messageText = message["text"] as! String
-                            let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
-
-                            // Timestamp
-                            let messageTsStr = message["time"] as! String
-                            var messageTs = messageTsStr
-                            // If we can parse the timestamp, change it to correct format
-                            if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
-                                let outputFormatter = DateFormatter()
-                                outputFormatter.dateFormat = "HH:mm:ss"
-                                messageTs = outputFormatter.string(from: messageDateUTC)
+                            if let newMessageObj = parseMessageData(message: message) {
+                                print("Appending \(newMessageObj) .--- ")
+                                self.channelsStore[channelId]?.messages.append(newMessageObj)
                             }
 
-                            let messageType = message["type"] as! String
-
-                            // From
-                            var messageFinal: String // TODO: get rid of
-                            var messageFromObj: MessageFrom?
-                            if let msgfrom = message["from"] as? Dictionary<String, Any>,
-                               let messageFromNick = msgfrom["nick"] as? String,
-                               let messageFromMode = msgfrom["mode"] as? String {
-                                //messageFinal = "\(messageTs) <\(messageNick)> \(
-                                //MessageFrom(   )
-                                messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
-                            }
-                            else {
-                                messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
-                            }
-
-                            // Final message format
-                            // TODO: Proper model that is decodable!!!
-
-                            let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: nil, highlight: false, from: messageFromObj)
-                            print("Appending \(newMessage) .--- ")
-                            self.channelsStore[channelId]?.messages.append(newMessage)
                         }
                     }
                 }
@@ -214,11 +228,10 @@ class SocketManagerWrapper: ObservableObject {
             // type: quit
             // type:
             
-            if let message = data.first as? Dictionary<String,Any>,
+            /*if let message = data.first as? Dictionary<String,Any>,
                let msg = message["msg"] as? Dictionary<String,Any> {
                 // TODO: ID - good for the model I wanna make later, I guess :-)
-                //let _ = message["id"] as! Int // except it isn't in the "msg" message? lol
-                
+                let messageId = message["id"] as? Int
                 // Text
                 let messageText = msg["text"] as! String
                 let messageTextWithMarkdown = replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
@@ -245,7 +258,15 @@ class SocketManagerWrapper: ObservableObject {
                 
                 // Final message format
                 // TODO: Proper models
-                self.messages.append(messageFinal)
+                self.messages.append(messageFinal)*/
+            if let message = data.first as? Dictionary<String,Any>,
+               let msg = message["msg"] as? Dictionary<String,Any>,
+               let channelId = message["chan"] as? Int {
+
+                if let newMessageObj = parseMessageData(message: msg) {
+                    print("Appending \(newMessageObj) .--- ")
+                    self.channelsStore[channelId]?.messages.append(newMessageObj)
+                }
             }
         }
         
