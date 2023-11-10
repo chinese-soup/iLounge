@@ -11,21 +11,16 @@ struct BufferView: View {
     @Binding var isBufferViewVisible: Bool
     @ObservedObject var socketManager: SocketManagerWrapper
     var sideBarWidth = UIScreen.main.bounds.size.width * 0.7
-    var bgColor: Color = Color(.init(
-                     red: 0,
-                     green: 0,
-                     blue: 0,
-                     alpha: 0.8 ))
+    var bgColor: Color = Color(.systemBackground.withAlphaComponent(0.9))
 
     var body: some View {
-        
         if isBufferViewVisible {
             ZStack {
                 GeometryReader { _ in
                     EmptyView()
                 }
-                .background(.black.opacity(0.6))
-                .opacity(isBufferViewVisible ? 1 : 0)
+                .background(.opacity(0.6))
+                .opacity(isBufferViewVisible ? 0.1 : 0)
                 .animation(.easeInOut.delay(0.5), value: isBufferViewVisible)
                 .onTapGesture {
                     isBufferViewVisible.toggle()
@@ -35,33 +30,34 @@ struct BufferView: View {
             //.edgesIgnoringSafeArea(.all)
         }
     }
+
     var content: some View {
-            HStack(alignment: .top) {
-                ZStack(alignment: .top) {
-                    bgColor
-                    VStack(alignment: .leading, spacing: 20) {
-                        ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
-                            Button {
-                                print("Switchin to \(key)")
-                                isBufferViewVisible.toggle()
-                                socketManager.openBuffer(channel_id: key)
-                                socketManager.currentBuffer = key // TODO: Move to openBuffer() func?
+        HStack(alignment: .top) {
+            ZStack(alignment: .top) {
+                bgColor.ignoresSafeArea()
+                VStack(alignment: .leading, spacing: 20) {
+                    ForEach(Array(socketManager.channelsStore.keys.sorted()), id: \.self) { key in
+                        Button {
+                            print("Switchin to \(key)")
+                            isBufferViewVisible.toggle()
+                            socketManager.openBuffer(channel_id: key)
+                            socketManager.currentBuffer = key // TODO: Move to openBuffer() func?
 
-                            } label: {
-                                Label("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")", systemImage: "fibrechannel")
-                                    .bold()
-                                    .font(.largeTitle)
-                            }
+                        } label: {
+                            Label("\(key) \(socketManager.channelsStore[key]?.chanName ?? "<Unknown channel>")", systemImage: "bubble.left.and.bubble.right")
+                                .bold()
+                                .font(.headline)
                         }
-                    }.padding(20)
-                }
-                .frame(width: sideBarWidth)
-                .offset(x: isBufferViewVisible ? 0 : -sideBarWidth)
-                .animation(.default, value: isBufferViewVisible)
-
-                Spacer()
+                    }
+                }.padding(20)
             }
+            .frame(width: sideBarWidth)
+            .offset(x: isBufferViewVisible ? 0 : -sideBarWidth)
+            .animation(.default, value: isBufferViewVisible)
+
+            Spacer()
         }
+    }
 }
 /*
 #Preview {

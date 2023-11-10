@@ -214,6 +214,7 @@ struct ContentView: View {
                     }
                 }.navigationTitle(socketManager.channelsStore[socketManager.currentBuffer]?.chanName ?? "iLounge")
             }.scrollDismissesKeyboard(.interactively)
+
             //.scrollDismissesKeyboard(.interactively)
             BufferView(isBufferViewVisible: $isBufferViewVisible, socketManager: socketManager)
         }
