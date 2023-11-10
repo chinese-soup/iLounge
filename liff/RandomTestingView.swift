@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import CoreData
+import CoreText
 
 struct TestView: View {
     @Binding var isTestViewVisible: Bool
@@ -15,8 +16,27 @@ struct TestView: View {
     private let width = 500.0
     let baseText = "apple pear orange lemon"
     let baseUrl = "https://github.com/search/repositories?q="
-    
+
+    func availableFonts() -> [String] {
+            var fonts: [String] = []
+
+            for family in UIFont.familyNames {
+                for name in UIFont.fontNames(forFamilyName: family) {
+                    fonts.append(name)
+                }
+            }
+        print("fonts count \(fonts.count)")
+
+            return fonts
+        }
+
+
     var body: some View {
+        List(self.availableFonts(), id: \.self) { fontName in
+                   Text(fontName)
+                .padding(.leading)
+                //.font(.custom(fontName, size: 16))
+               }
         ZStack {
             Color.gray.opacity(0.5)
                 .onTapGesture {

@@ -76,7 +76,9 @@ struct ContentView: View {
                 Image(systemName: "arrow.right.to.line")
             }.padding(.leading)
 
-            TextField("Type a message", text: $messageInput) // TextEditor for multiline, but then I can't send lol
+            TextField("Type a message", text: $messageInput, onCommit: {
+                textFieldIsFocused = true
+            }) // TextEditor for multiline, but then I can't send lol
                 .onSubmit {
                     DispatchQueue.main.async {
                         sendMessage()
@@ -86,13 +88,14 @@ struct ContentView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 // .padding(.trailing) // TODO: Leave padding only on Buttons around the Textbox?
                 .focused($textFieldIsFocused)
-
             Button(action: {
+                textFieldIsFocused = true
                 sendMessage()
             }) {
                 Image(systemName: "arrowshape.turn.up.right.fill")
             }
             .padding(.trailing)
+
         }
         .padding(.bottom)
     }
@@ -113,6 +116,7 @@ struct ContentView: View {
                                                 Text(formatTimestamp(parsedDate: msgParsedDate))
                                                     .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
                                                     .foregroundColor(.gray)
+
                                             } else {
                                                 Text("Unknown TS")
                                                     .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
@@ -146,8 +150,11 @@ struct ContentView: View {
                                         Button {
                                         } label: {
                                             Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
+
                                         }
                                         Button {
+                                            let pasteboard = UIPasteboard.general
+                                            pasteboard.string = "\(msg.from) \(msg.text)" // TODO: lol
                                         } label: {
                                             Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
                                         }
@@ -169,8 +176,9 @@ struct ContentView: View {
                                 }
                             }
                         }
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity).scrollDismissesKeyboard(.interactively)
-                    
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
+
+
                     bottomField
                 }
                 .navigationBarItems(
@@ -205,8 +213,8 @@ struct ContentView: View {
                         scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
                     }
                 }.navigationTitle(socketManager.channelsStore[socketManager.currentBuffer]?.chanName ?? "iLounge")
-            }
-            .scrollDismissesKeyboard(.interactively)
+            }.scrollDismissesKeyboard(.interactively)
+            //.scrollDismissesKeyboard(.interactively)
             BufferView(isBufferViewVisible: $isBufferViewVisible, socketManager: socketManager)
         }
     }
@@ -232,7 +240,6 @@ struct ContentView: View {
             print("isTestViewVisible = \(isTestViewVisible)")
             isTestViewVisible.toggle()
         }
-        textFieldIsFocused = true
     }
     
     func isImage(text: String) -> Bool {

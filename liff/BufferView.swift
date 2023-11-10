@@ -42,10 +42,10 @@ struct BufferView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
                             Button {
-                                print("Ahoj \(key)")
+                                print("Switchin to \(key)")
                                 isBufferViewVisible.toggle()
                                 socketManager.openBuffer(channel_id: key)
-                                socketManager.currentBuffer = key
+                                socketManager.currentBuffer = key // TODO: Move to openBuffer() func?
 
                             } label: {
                                 Label("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")", systemImage: "fibrechannel")

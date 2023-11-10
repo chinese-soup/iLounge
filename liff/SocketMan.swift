@@ -185,14 +185,17 @@ class SocketManagerWrapper: ObservableObject {
                             print("More, message = ")
                             if let newMessageObj = parseMessageData(message: message) {
                                 print("Appending \(newMessageObj) .--- ")
-                                self.channelsStore[channelId]?.messages.append(newMessageObj)
+
+                                if let index = self.channelsStore[channelId]?.messages.firstIndex(where: { $0.id == newMessageObj.id }) {
+                                    print("This message already exists bro.") // TODO: Get rid of or nah? Move to func maybe... we have IDs after all...
+                                } else {
+                                    self.channelsStore[channelId]?.messages.append(newMessageObj)
+                                }
                             }
 
                         }
                     }
                 }
-
-
             }
         }
 
@@ -350,6 +353,11 @@ class SocketManagerWrapper: ObservableObject {
                             }
                         }
                     }
+                }
+                if let active = message["active"] as? Int {
+                    print("Setting active buffer to \(active)")  // TODO: ADD A CHECK IF THE BUFFER EXISTS OR NOT
+                    self.currentBuffer = active // TODO: Move to openBuffer() func?
+                    self.openBuffer(channel_id: active)
                 }
             }
         }
