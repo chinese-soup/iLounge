@@ -18,10 +18,10 @@ struct BufferView: View {
             ZStack {
                 GeometryReader { _ in
                     EmptyView()
-                }
-                .background(.opacity(0.6))
-                .opacity(isBufferViewVisible ? 0.1 : 0)
-                .animation(.easeInOut.delay(0.5), value: isBufferViewVisible)
+                }.animation(.easeInOut.delay(0.5), value: isBufferViewVisible)
+
+                .background(Color.black.opacity(0.8))
+                .opacity(isBufferViewVisible ? 0.7 : 0)
                 .onTapGesture {
                     isBufferViewVisible.toggle()
                 }
@@ -35,7 +35,7 @@ struct BufferView: View {
         HStack(alignment: .top) {
             ZStack(alignment: .top) {
                 bgColor.ignoresSafeArea()
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 40) {
                     ForEach(Array(socketManager.channelsStore.keys.sorted()), id: \.self) { key in
                         Button {
                             print("Switchin to \(key)")
@@ -49,11 +49,12 @@ struct BufferView: View {
                                 .font(.headline)
                         }
                     }
-                }.padding(20)
+                }.padding(0)
             }
             .frame(width: sideBarWidth)
             .offset(x: isBufferViewVisible ? 0 : -sideBarWidth)
-            .animation(.default, value: isBufferViewVisible)
+            .animation(.easeInOut.delay(3.5), value: isBufferViewVisible)
+
 
             Spacer()
         }

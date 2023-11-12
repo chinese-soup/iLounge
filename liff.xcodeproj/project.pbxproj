@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A6272E22B016EB50008BD9A /* NickColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6272E12B016EB50008BD9A /* NickColors.swift */; };
 		9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */; };
 		9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD92AF916BE00E8B8BC /* SettingsView.swift */; };
 		9A719DDC2AF9906E00E8B8BC /* SocketMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9A6272E12B016EB50008BD9A /* NickColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NickColors.swift; sourceTree = "<group>"; };
 		9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		9A719DD92AF916BE00E8B8BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketMan.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 				9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */,
 				9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */,
 				9A719DDF2AFA7C8B00E8B8BC /* BufferView.swift */,
+				9A6272E12B016EB50008BD9A /* NickColors.swift */,
 			);
 			path = liff;
 			sourceTree = "<group>";
@@ -291,6 +294,7 @@
 			files = (
 				9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */,
 				9A719DE02AFA7C8B00E8B8BC /* BufferView.swift in Sources */,
+				9A6272E22B016EB50008BD9A /* NickColors.swift in Sources */,
 				9A719DDC2AF9906E00E8B8BC /* SocketMan.swift in Sources */,
 				9A719DDE2AF990D800E8B8BC /* RandomTestingView.swift in Sources */,
 				9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */,

@@ -13,8 +13,6 @@ import CoreData
 
 
 class SocketManagerWrapper: ObservableObject {
-    @Published var messages: [String] = [] // TODO: Make this into a proper Message Model
-    
     @Published var currentBuffer: Int = 0
     
     @Published var channelsStore: [Int: Channel] = [:]
@@ -46,7 +44,6 @@ class SocketManagerWrapper: ObservableObject {
         }
         else {
             print("SOCKET FAILED because WRONG HOSTNAME") // TODO: uhh
-            self.messages.append("Socket connection failed, wrong hostname probs bro lol") // TODO: ^
         }
         
         
@@ -164,8 +161,7 @@ class SocketManagerWrapper: ObservableObject {
         //socket?.defaultSocket.onAny {print("Got event: \($0.event), with items: \($0.items)")}
         socket?.defaultSocket.on(clientEvent: .statusChange) { data, ack in
             print("Status change", data, ack)
-            
-            self.messages.append("Status: \(data)")
+
         }
         
         socket?.defaultSocket.on(clientEvent: .connect) { data, ack in
@@ -186,7 +182,7 @@ class SocketManagerWrapper: ObservableObject {
                             if let newMessageObj = parseMessageData(message: message) {
                                 print("Appending \(newMessageObj) .--- ")
 
-                                if let index = self.channelsStore[channelId]?.messages.firstIndex(where: { $0.id == newMessageObj.id }) {
+                                if (self.channelsStore[channelId]?.messages.firstIndex(where: { $0.id == newMessageObj.id })) != nil {
                                     print("This message already exists bro.") // TODO: Get rid of or nah? Move to func maybe... we have IDs after all...
                                 } else {
                                     self.channelsStore[channelId]?.messages.append(newMessageObj)
@@ -199,11 +195,11 @@ class SocketManagerWrapper: ObservableObject {
             }
         }
 
-        socket?.defaultSocket.on("names") { [self] data, ack in
+        socket?.defaultSocket.on("names") { data, ack in
             // TODO: names
         }
 
-        socket?.defaultSocket.on("msg") { [self] data, ack in
+        socket?.defaultSocket.on("msg") { data, ack in
             /* example msg
              msg =     {
                  channel = "#test.cz";
@@ -262,26 +258,23 @@ class SocketManagerWrapper: ObservableObject {
                let msg = message["msg"] as? Dictionary<String,Any>,
                let channelId = message["chan"] as? Int {
 
-                if let newMessageObj = parseMessageData(message: msg) {
+                if let newMessageObj = self.parseMessageData(message: msg) {
                     print("Appending \(newMessageObj) .--- ")
                     self.channelsStore[channelId]?.messages.append(newMessageObj)
                 }
             }
         }
         
-        socket?.defaultSocket.on("message") { [self] data, ack in
+        socket?.defaultSocket.on("message") { data, ack in
             print("message \(data)")
             if let message = data.first as? String {
-                self.messages.append(message)
-                self.messages.append(String(describing:data))
+                print(message)
             }
         }
         
-        socket?.defaultSocket.on("connect") { [self] data, ack in
+        socket?.defaultSocket.on("connect") { data, ack in
             print("connect \(data)")
             if let message = data.first as? String {
-                self.messages.append(message)
-                self.messages.append(String(describing:data))
             }
         }
         
@@ -294,12 +287,12 @@ class SocketManagerWrapper: ObservableObject {
                 for network in networks {
                     if let channels = network["channels"] as? Array<Dictionary<String, Any>> {
                         for channel in channels {
-                            self.messages.append(String(describing: channel["name"])) //TODO: I should be able to deode this into `DeCodable` instead ... look into this (struct Channel)
-
+                            // TODO: I should be able to deode this into `DeCodable` instead ... look into this (struct Channel)
                             if let chanId = channel["id"] as? Int,
                                let chanName = channel["name"] as? String,
                                let chanTopic = channel["topic"] as? String,
                                let chanType = channel["type"] as? String {
+
                                 let newChan = Channel(id: chanId, chanId: chanId, chanName: chanName, chanType: chanType, topic: chanTopic, messages: [], opened: false)
                                 self.channelsStore[newChan.chanId] = newChan
 
@@ -345,9 +338,13 @@ class SocketManagerWrapper: ObservableObject {
                                         // TODO: Proper model that is decodable!!!
 
                                         let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: messageDateUTC, highlight: false, from: messageFromObj)
-                                        print("Appending \(newMessage) .--- ")
-                                        self.channelsStore[newChan.chanId]?.messages.append(newMessage)
-                                        //self.messages.append(messageFinal)
+
+                                        if (self.channelsStore[newChan.chanId]?.messages.firstIndex(where: { $0.id == newMessage.id })) != nil {
+                                            print("This message already exists bro.") // TODO: Get rid of or nah? Move to func maybe... we have IDs after all...
+                                        } else {
+                                            print("Appending \(newMessage) .--- ")
+                                            self.channelsStore[newChan.chanId]?.messages.append(newMessage)
+                                        }
                                     }
                                 }
                             }
@@ -371,7 +368,6 @@ class SocketManagerWrapper: ObservableObject {
             
             if let message = data.first as? String {
                 print("auth:start \(message)")
-                self.messages.append(String(describing:message))
             }
         }
         

@@ -48,11 +48,41 @@ struct ContentView: View {
 
     // SocketIO manager, needs to be ObservedObject so that it doesn't get destroyed during the lifetime of the app
     @ObservedObject var socketManager: SocketManagerWrapper
-    
+
+    // Check whether we are in dark mode or light mode
+    @Environment(\.colorScheme) var colorScheme
+
     // View's constructor
     init() {
         print("Hello from init()")
         self.socketManager = SocketManagerWrapper()
+    }
+
+    func getNicknameColor(nickname: String) -> Color {
+        // The hash func is the same as in The Lounge
+        // to keep the colors for nicknames consistent with the webapp
+
+        // TODO: Consider caching the color in the msgfrom struct
+        var hash = 0
+
+        for c in nickname.utf8 {
+            hash += Int(c)
+        }
+        hash = hash % 32
+
+        if colorScheme == .dark {
+            if hash < Color.nickColorsDark.count {
+                return Color.nickColorsDark[hash]
+            } else {
+                return Color(.white)
+            }
+        } else {
+            if hash < Color.nickColorsLight.count {
+                return Color.nickColorsLight[hash]
+            } else {
+                return Color(.darkGray)
+            }
+        }
     }
 
     func truncateNickname(origNickname: String) -> String {
@@ -110,7 +140,7 @@ struct ContentView: View {
                                 //ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
                                 ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self.id) { msg in
                                     //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
-                                    HStack {
+                                    HStack(alignment: .top) {
                                         if showTimestampsSetting {
                                             if let msgParsedDate = msg.timeParsed {
                                                 Text(formatTimestamp(parsedDate: msgParsedDate))
@@ -127,6 +157,7 @@ struct ContentView: View {
                                             //Text(msgNick.nick.count > nickLengthSetting ? String(msgNick.nick.prefix(nickLengthSetting)) : msgNick.nick)
                                             Text(truncateNickname(origNickname: msgNick.nick))
                                                 .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                                .foregroundColor(getNicknameColor(nickname: msgNick.nick))
                                         } else {
                                             Text("SYSTEM")
                                                 .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
@@ -210,7 +241,7 @@ struct ContentView: View {
                 .sheet(isPresented: $isSettingsVisible) {
                     SettingsView(isSettingsVisible: $isSettingsVisible).onDisappear() {
                         // TODO: When we close settings we scroll down, because the keyboard might screw up the scroll position, lol :|
-                        scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
+                        //scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
                     }
                 }.navigationTitle(socketManager.channelsStore[socketManager.currentBuffer]?.chanName ?? "iLounge")
             }.scrollDismissesKeyboard(.interactively)
@@ -234,7 +265,7 @@ struct ContentView: View {
         if !messageInput.isEmpty {
             socketManager.sendMessage(message: messageInput, channel_id: 2)
             messageInput = ""
-            scrollProxy?.scrollTo(socketManager.messages.count - 1, anchor: .bottom)
+            //scrollProxy?.scrollTo(socketManager.messages.count - 1, anchor: .bottom)
         }
         else
         {
@@ -242,11 +273,11 @@ struct ContentView: View {
             isTestViewVisible.toggle()
         }
     }
-    
+
     func isImage(text: String) -> Bool {
         /* A dumb way to check if URL could be an image to open in a preview instead of the web browser */
         let letImagePattern = #"(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\.(?:jpg|jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?"#
-        if text.range(of: letImagePattern, options: .regularExpression) != nil {
+        if text.range(of: letImagePattern, options: [.regularExpression, .caseInsensitive]) != nil {
             return true
         }
         return false
