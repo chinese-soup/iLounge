@@ -137,12 +137,23 @@ struct ContentView: View {
                     ScrollView {
                         ScrollViewReader { proxy in
                             VStack(alignment: .leading, spacing: 5) {
+                                // TODO: TEMP
+                                HStack {
+                                    Spacer()
+                                    Button(action: {
+                                        socketManager.loadMoreMessagesInCurrentBuffer()
+                                    }, label: {
+                                        Label("Load more messages", systemImage: "arrow.circlepath").padding()
+                                    })
+                                    Spacer()
+                                }
                                 //ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
-                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? [], id: \.self.id) { msg in
+                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages.sorted(by: { $0.id < $1.id }) ?? [], id: \.self.id) { msg in
                                     //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
                                     HStack(alignment: .top) {
                                         if showTimestampsSetting {
                                             if let msgParsedDate = msg.timeParsed {
+                                                Text(.init(String(msg.id)))
                                                 Text(formatTimestamp(parsedDate: msgParsedDate))
                                                     .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
                                                     .foregroundColor(.gray)
@@ -166,7 +177,7 @@ struct ContentView: View {
                                         Text(.init(msg.text)).id(msg.id) // id here is important for the scroll proxy to wok apparently
                                             .padding(.horizontal)
                                             .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
-                                            //.textSelection(.enabled)
+                                            .textSelection(.enabled)
                                             .environment(\.openURL, OpenURLAction { url in
                                                 handleUserClickedLink(url: url)
                                                 return .handled
@@ -185,7 +196,7 @@ struct ContentView: View {
                                         }
                                         Button {
                                             let pasteboard = UIPasteboard.general
-                                            pasteboard.string = "\(msg.from) \(msg.text)" // TODO: lol
+                                            pasteboard.string = "\(String(describing: msg.from)) \(msg.text)" // TODO: lol
                                         } label: {
                                             Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
                                         }
@@ -197,8 +208,9 @@ struct ContentView: View {
                             }
                             // TODO: Auto-scroll needs some love and care
                             .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
+                                print("bruh wtf \(String(describing: $scrollProxy.wrappedValue))")
                                 withAnimation {
-                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                                    //scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                                 }
                             }
                             .onChange(of: socketManager.currentBuffer) {

@@ -45,8 +45,6 @@ class SocketManagerWrapper: ObservableObject {
         else {
             print("SOCKET FAILED because WRONG HOSTNAME") // TODO: uhh
         }
-        
-        
     }
     
     func sendMessage(message: String, channel_id: Int = 2) {
@@ -55,18 +53,34 @@ class SocketManagerWrapper: ObservableObject {
         socket?.defaultSocket.emit("input", msgToSend)
     }
 
+    func loadMoreMessagesInCurrentBuffer() {
+        let lastMessageId = channelsStore[currentBuffer]?.messages.first?.id as? Int
+        //.sorted(by: { $0.id < $1.id })
+        print("[LoadMoreMessagesInCurrentBuffer]  LASt mesasged id = \(String(describing: lastMessageId))")
+        if(lastMessageId == 0) { // TODO: This is probably a cause for 1) Start the app 2) Open buffer 3) Open buffer again -> old messsages are pretending to be new messages at the bottom (of course not counting the fact we append them at the bottom instead of sorting by time / id )
+
+            print("[LoadMoreMessagesInCurrentBuffer]  Oh no, lastmsgid == 0")
+        } else {
+            print("[LoadMoreMessagesInCurrentBuffer] lastMessageId sending = \(String(describing: lastMessageId))")
+            let moreMessagesRequest = ["target": currentBuffer, "lastId": lastMessageId ?? 0, "condensed": true] as [String : Any]
+            socket?.defaultSocket.emit("more", moreMessagesRequest)
+        }
+    }
+
     func openBuffer(channel_id: Int) {
         socket?.defaultSocket.emit("open", channel_id)
 
         // TODO: !!! This has the side-effect of the first message that appears from "init" (the thing we get before we even send "more")
         // TODO: to be on the top of the history,
         // TODO: even though it should be the latest message
+        // TODO: So far fixed by sorting the array every append using the IDs, maybe I'll keep it that way tbh it fixes a lot of issues for "free".
 
         // TODO: This currently DUPLICATES MESSAGES UPON CHANGING TO THE BUFFER (last X mesagess repeat)
-        let lastMessageId = channelsStore[channel_id]?.messages.last?.id as? Int
-        print("LASt mesasged id = \(String(describing: lastMessageId))")
 
-        let moreMessagesRequest = ["target": channel_id, "lastId": lastMessageId ?? 0, "condensed": false] as [String : Any]
+        let lastMessageId = channelsStore[channel_id]?.messages.last?.id as? Int
+        print("lastMessageId sending = \(String(describing: lastMessageId))") // TODO: ?
+
+        let moreMessagesRequest = ["target": channel_id, "lastId": lastMessageId ?? 0, "condensed": true] as [String : Any]
         socket?.defaultSocket.emit("more", moreMessagesRequest)
     }
 
@@ -86,7 +100,6 @@ class SocketManagerWrapper: ObservableObject {
         let urlPattern = #"((?:(?:https?|ftp)://)?[\w/\-?=%.]+\.[\w/\-&?=%.]+)"#
         let messageTextWithMarkdown = origMsgText.replacingOccurrences(of: urlPattern, with: "[$1]($1)", options: .regularExpression)
         print(messageTextWithMarkdown)
-        
         return messageTextWithMarkdown
     }
 
@@ -96,7 +109,11 @@ class SocketManagerWrapper: ObservableObject {
         let chanName: String
         let chanType: String
         let topic: String
-        var messages: [Message]
+        var messages: [Message] = [] {
+            didSet {
+                messages.sort(by: { $0.id < $1.id })
+            }
+        }
         let opened: Bool
     }
 
@@ -178,13 +195,12 @@ class SocketManagerWrapper: ObservableObject {
                         print("messages parsed= \(messagesParsed.count)")
 
                         for message in messagesParsed {
-                            print("More, message = ")
                             if let newMessageObj = parseMessageData(message: message) {
-                                print("Appending \(newMessageObj) .--- ")
-
+                                print("More, message = \(newMessageObj.id)")
                                 if (self.channelsStore[channelId]?.messages.firstIndex(where: { $0.id == newMessageObj.id })) != nil {
                                     print("This message already exists bro.") // TODO: Get rid of or nah? Move to func maybe... we have IDs after all...
                                 } else {
+                                    print("Appending \(newMessageObj) .--- ")
                                     self.channelsStore[channelId]?.messages.append(newMessageObj)
                                 }
                             }
