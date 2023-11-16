@@ -21,6 +21,8 @@ class SocketManagerWrapper: ObservableObject {
     // TODO: E.g. NickList etc.
     //
     var socket: SocketManager?
+    @AppStorage("loungeUsername") private var usernameSetting: String = ""
+    @AppStorage("loungePaassword") private var passwordSetting: String = ""
     @AppStorage("loungeHostname") private var hostnameSetting: String = "localhost"
     @AppStorage("loungePort") private var portSetting: String = "8080"
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
@@ -378,7 +380,7 @@ class SocketManagerWrapper: ObservableObject {
         socket?.defaultSocket.on("auth:start") { [self] data, ack in
             // we got  auth start's exgon gonan give it to em
             print("AUTH START BRo message \(String(describing:data))")
-            let swiftDict: [String: String] = ["user": "polivka", "password": "asdfasdf"]
+            let swiftDict: [String: String] = ["user": usernameSetting, "password": passwordSetting]
 
             socket?.defaultSocket.emit("auth:perform", swiftDict)
             

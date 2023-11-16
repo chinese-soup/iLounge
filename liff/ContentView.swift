@@ -14,6 +14,12 @@ struct ContentView: View {
     // TODO: Clean up these
     @State private var messageInput = ""
 
+    @State private var scrolledID: Int?
+    @State private var contentHeight: CGFloat = .zero
+    @State private var scrollViewHeight: CGFloat = .zero
+
+    @State private var lastMessageVisible: Bool = false
+
     // Visibility
     @State private var isSettingsVisible = false
     @State private var isTestViewVisible = false
@@ -130,104 +136,129 @@ struct ContentView: View {
         .padding(.bottom)
     }
 
+    var messageView: some View {
+        ScrollView {
+            ScrollViewReader { proxy in
+                LazyVStack(alignment: .leading, spacing: 5) {
+                    // TODO: TEMP
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            socketManager.loadMoreMessagesInCurrentBuffer()
+                        }, label: {
+                            Label("Load more messages", systemImage: "arrow.circlepath").padding()
+                        })
+                        Spacer()
+                    }
+                    ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
+                            //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
+                        HStack(alignment: .top) {
+                            if showTimestampsSetting {
+                                if let msgParsedDate = msg.timeParsed {
+                                    /*Text(.init(String(msg.id))).onTapGesture {
+                                        proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
+                                    }*/
+                                    Text(formatTimestamp(parsedDate: msgParsedDate))
+                                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                        .foregroundColor(.gray)
+
+                                } else {
+                                    Text("Unknown TS")
+                                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                }
+                            }
+
+                            if let msgNick = msg.from {
+                                //Text(msgNick.nick.count > nickLengthSetting ? String(msgNick.nick.prefix(nickLengthSetting)) : msgNick.nick)
+                                Text(truncateNickname(origNickname: msgNick.nick))
+                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                    .foregroundColor(getNicknameColor(nickname: msgNick.nick))
+                            } else {
+                                Text("SYSTEM")
+                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                            }
+
+                            Text(.init(msg.text)).id(msg.id) // id here is important for the scroll proxy to work apparently
+                                .padding(.horizontal)
+                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
+                                .textSelection(.enabled)
+                                .environment(\.openURL, OpenURLAction { url in
+                                    handleUserClickedLink(url: url)
+                                    return .handled
+                                })
+                            /*if (msg.id == socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
+                            {
+                                Color.clear
+                                    .frame(width: 0, height: 0, alignment: .bottom)
+                                    .onAppear {
+                                        lastMessageVisible = true
+                                        print("last msg is now = \(lastMessageVisible)")
+                                    }
+                                    .onDisappear {
+                                        lastMessageVisible = false
+                                        print("last msg is now = \(lastMessageVisible)")
+                                    }
+                            }*/
+                            /*.onTapGesture {
+                             //let pasteboard = UIPasteboard.general
+                             //pasteboard.string = msg
+                             //selectedEntry = msg
+                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                             }*/
+                        }.onTapGesture {
+                            scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                        }
+                        .contextMenu {
+                            Button {
+                            } label: {
+                                Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
+
+                            }
+                            Button {
+                                let pasteboard = UIPasteboard.general
+                                pasteboard.string = "\(String(describing: msg.from)) \(msg.text)" // TODO: lol
+                            } label: {
+                                Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
+                            }
+                        }
+                    }
+                    // TODO: Auto-scroll needs some love and care
+                    .onAppear {
+                        scrollProxy = proxy
+                    }
+                    .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
+                        scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id ?? 0
+                    }
+
+                    .onChange(of: socketManager.currentBuffer) {
+                        withAnimation {
+                            scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                        }
+                    }
+                }.scrollTargetLayout()
+
+            }
+        }
+        .scrollPosition(id: $scrolledID)
+        /*.onChange(of: scrolledID) { oldValue, newValue in
+            print(newValue ?? "No value set")
+        }*/
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     var body: some View {
         ZStack {
             NavigationStack {
                 VStack {
-                    ScrollView {
-                        ScrollViewReader { proxy in
-                            VStack(alignment: .leading, spacing: 5) {
-                                // TODO: TEMP
-                                HStack {
-                                    Spacer()
-                                    Button(action: {
-                                        socketManager.loadMoreMessagesInCurrentBuffer()
-                                    }, label: {
-                                        Label("Load more messages", systemImage: "arrow.circlepath").padding()
-                                    })
-                                    Spacer()
-                                }
-                                //ForEach(Array(socketManager.channelsStore.keys), id: \.self) { key in
-                                ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages.sorted(by: { $0.id < $1.id }) ?? [], id: \.self.id) { msg in
-                                    //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
-                                    HStack(alignment: .top) {
-                                        if showTimestampsSetting {
-                                            if let msgParsedDate = msg.timeParsed {
-                                                Text(.init(String(msg.id)))
-                                                Text(formatTimestamp(parsedDate: msgParsedDate))
-                                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
-                                                    .foregroundColor(.gray)
-
-                                            } else {
-                                                Text("Unknown TS")
-                                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
-                                            }
-                                        }
-
-                                        if let msgNick = msg.from {
-                                            //Text(msgNick.nick.count > nickLengthSetting ? String(msgNick.nick.prefix(nickLengthSetting)) : msgNick.nick)
-                                            Text(truncateNickname(origNickname: msgNick.nick))
-                                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
-                                                .foregroundColor(getNicknameColor(nickname: msgNick.nick))
-                                        } else {
-                                            Text("SYSTEM")
-                                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
-                                        }
-
-                                        Text(.init(msg.text)).id(msg.id) // id here is important for the scroll proxy to wok apparently
-                                            .padding(.horizontal)
-                                            .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
-                                            .textSelection(.enabled)
-                                            .environment(\.openURL, OpenURLAction { url in
-                                                handleUserClickedLink(url: url)
-                                                return .handled
-                                            })
-                                        /*.onTapGesture {
-                                         selectedEntry = msg
-                                         let pasteboard = UIPasteboard.general
-                                         pasteboard.string = msg
-                                         }*/
-                                    }
-                                    .contextMenu {
-                                        Button {
-                                        } label: {
-                                            Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
-
-                                        }
-                                        Button {
-                                            let pasteboard = UIPasteboard.general
-                                            pasteboard.string = "\(String(describing: msg.from)) \(msg.text)" // TODO: lol
-                                        } label: {
-                                            Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
-                                        }
-                                    }
-                                }
-                            }
-                            .onAppear {
-                                scrollProxy = proxy
-                            }
-                            // TODO: Auto-scroll needs some love and care
-                            .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
-                                print("bruh wtf \(String(describing: $scrollProxy.wrappedValue))")
-                                withAnimation {
-                                    //scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
-                                }
-                            }
-                            .onChange(of: socketManager.currentBuffer) {
-                                withAnimation {
-                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
-                                }
-                            }
-                        }
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
-
-
+                    messageView
                     bottomField
                 }
                 .navigationBarItems(
                     leading: Button(action: {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            isBufferViewVisible.toggle()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation {
+                                isBufferViewVisible.toggle()
+                            }
                             print("isBufferViewVisible = ", isBufferViewVisible)
                         }
                     }) {
@@ -241,7 +272,8 @@ struct ContentView: View {
                     }
                     
                 )
-                // TODO: Remove this stuff
+
+                // TODO: Remove this sheet stuff?
                 // TODO: Probably make the settings sheet not be a sheet?
                 // TODO: ^ Dunno navigation instead? We shall see about it.
                 .sheet(isPresented: $isPreviewViewVisible){
@@ -256,9 +288,9 @@ struct ContentView: View {
                         //scrollProxy?.scrollTo(socketManager.messages.last, anchor: .bottom)
                     }
                 }.navigationTitle(socketManager.channelsStore[socketManager.currentBuffer]?.chanName ?? "iLounge")
-            }.scrollDismissesKeyboard(.interactively)
+            }
+            .scrollDismissesKeyboard(.interactively)
 
-            //.scrollDismissesKeyboard(.interactively)
             BufferView(isBufferViewVisible: $isBufferViewVisible, socketManager: socketManager)
         }
     }
@@ -293,6 +325,15 @@ struct ContentView: View {
             return true
         }
         return false
+    }
+}
+
+
+struct ViewHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 

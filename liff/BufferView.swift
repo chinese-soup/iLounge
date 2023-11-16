@@ -18,15 +18,16 @@ struct BufferView: View {
             ZStack {
                 GeometryReader { _ in
                     EmptyView()
-                }.animation(.easeInOut.delay(0.5), value: isBufferViewVisible)
-
+                }//.animation(.easeInOut.delay(0.5), value: isBufferViewVisible)
                 .background(Color.black.opacity(0.8))
                 .opacity(isBufferViewVisible ? 0.7 : 0)
                 .onTapGesture {
-                    isBufferViewVisible.toggle()
-                }
+                    withAnimation(.easeInOut(duration: 2.0)){
+                        isBufferViewVisible.toggle()
+                    }
+                }.animation(.easeInOut.delay(0.5), value: isBufferViewVisible)
                 content
-            }
+            }//.zIndex(.infinity)
             //.edgesIgnoringSafeArea(.all)
         }
     }
@@ -50,15 +51,13 @@ struct BufferView: View {
                         }
                     }
                 }.padding(0)
-            }
+            }.zIndex(.infinity)
             .frame(width: sideBarWidth)
             .offset(x: isBufferViewVisible ? 0 : -sideBarWidth)
-            .animation(.easeInOut.delay(3.5), value: isBufferViewVisible)
-
-
             Spacer()
-        }
+        } //.animation(.easeInOut.delay(9.5), value: isBufferViewVisible)
     }
+
 }
 /*
 #Preview {

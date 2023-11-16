@@ -13,6 +13,8 @@ struct SettingsView: View {
     @Binding var isSettingsVisible: Bool
     
     // Connection settings
+    @AppStorage("loungeUsername") private var usernameSetting: String = ""
+    @AppStorage("loungePaassword") private var passwordSetting: String = ""
     @AppStorage("loungeHostname") private var hostnameSetting: String = ""
     @AppStorage("loungePort") private var portSetting: String = "8080" // TODO: This is a String because Integer hated me, look into it again
     @AppStorage("loungeUseSsl") private var useSslSetting: Bool = false
@@ -51,6 +53,18 @@ struct SettingsView: View {
                         Text("Use SSL")
                         Spacer()
                         Toggle("", isOn: $useSslSetting)
+                    }
+                    HStack {
+                        Text("Username")
+                        Spacer()
+                        TextField("Username", text: $usernameSetting)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    HStack {
+                        Text("Password")
+                        Spacer()
+                        SecureField("Password", text: $passwordSetting)
+                            .multilineTextAlignment(.trailing)
                     }
                 }
                 Section(header: Text("Display Settings")) {
