@@ -1,6 +1,6 @@
 //
 //  BufferView.swift
-//  liff
+//  ilounge
 //
 //  Created by Jakub Mach on 07.11.2023.
 //

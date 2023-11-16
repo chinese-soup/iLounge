@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  liff
+//  ilounge
 //
 //  Created by Jakub Mach on 06.11.2023.
 //

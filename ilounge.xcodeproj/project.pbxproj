@@ -41,7 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9AAF7C7F2AF5623E00E60E2F /* ilounge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ilounge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AAF7C7F2AF5623E00E60E2F /* iLounge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iLounge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C8F2AF5623F00E60E2F /* iloungeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iloungeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C932AF5623F00E60E2F /* liffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffTests.swift; sourceTree = "<group>"; };
 		9AAF7C992AF5623F00E60E2F /* iloungeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iloungeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,7 +101,7 @@
 		9AAF7C802AF5623E00E60E2F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9AAF7C7F2AF5623E00E60E2F /* ilounge.app */,
+				9AAF7C7F2AF5623E00E60E2F /* iLounge.app */,
 				9AAF7C8F2AF5623F00E60E2F /* iloungeTests.xctest */,
 				9AAF7C992AF5623F00E60E2F /* iloungeUITests.xctest */,
 			);
@@ -171,7 +171,7 @@
 				9AD3D41F2AF647C700B13019 /* SocketIO */,
 			);
 			productName = liff;
-			productReference = 9AAF7C7F2AF5623E00E60E2F /* ilounge.app */;
+			productReference = 9AAF7C7F2AF5623E00E60E2F /* iLounge.app */;
 			productType = "com.apple.product-type.application";
 		};
 		9AAF7C8E2AF5623F00E60E2F /* iloungeTests */ = {
@@ -478,8 +478,8 @@
 					"$(PROJECT_DIR)/ilounge",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.liff;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.ilounge;
+				PRODUCT_NAME = iLounge;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -517,8 +517,8 @@
 					"$(PROJECT_DIR)/ilounge",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.liff;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.ilounge;
+				PRODUCT_NAME = iLounge;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;

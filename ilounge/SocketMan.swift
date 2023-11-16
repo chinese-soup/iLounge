@@ -315,49 +315,14 @@ class SocketManagerWrapper: ObservableObject {
 
                                 if let messagesParsed = channel["messages"] as? Array<Dictionary<String, Any>> {
                                     for message in messagesParsed {
-                                        // TODO: ID - good for the future model I guess :-)
-                                        let messageId = message["id"] as! Int
-
-                                        // Text
-                                        let messageText = message["text"] as! String
-                                        let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
-
-                                        // Timestamp
-                                        let messageTsStr = message["time"] as! String
-                                        // If we can parse the timestamp, change it to correct format
-                                        /*if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
-                                            let outputFormatter = DateFormatter()
-                                            outputFormatter.dateFormat = "HH:mm:ss"
-                                            messageTs = outputFormatter.string(from: messageDateUTC)
-                                        }*/
-
-                                        // If we can parse the timestamp, change it to correct format
-                                        let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr)
-
-                                        let messageType = message["type"] as! String
-
-                                        // From
-                                        var messageFinal: String // TODO: get rid of
-                                        var messageFromObj: MessageFrom?
-
-                                        if let msgfrom = message["from"] as? Dictionary<String, Any>,
-                                           let messageFromNick = msgfrom["nick"] as? String,
-                                           let messageFromMode = msgfrom["mode"] as? String {
-                                            messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
-                                        } else {
-                                            messageFinal = "\(messageTsStr) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
-                                        }
-
-                                        // Final message format
-                                        // TODO: Proper model that is decodable!!!
-
-                                        let newMessage = Message(id: messageId, channelName: "", showInActive: false, error: nil, text: messageText, type: messageType, timeOrig: messageTsStr, timeParsed: messageDateUTC, highlight: false, from: messageFromObj)
-
-                                        if (self.channelsStore[newChan.chanId]?.messages.firstIndex(where: { $0.id == newMessage.id })) != nil {
-                                            print("This message already exists bro.") // TODO: Get rid of or nah? Move to func maybe... we have IDs after all...
-                                        } else {
-                                            print("Appending \(newMessage) .--- ")
-                                            self.channelsStore[newChan.chanId]?.messages.append(newMessage)
+                                        if let newMessageObj = self.parseMessageData(message: message) {
+                                            print("More, message = \(newMessageObj.id)")
+                                            if (self.channelsStore[newChan.chanId]?.messages.firstIndex(where: { $0.id == newMessageObj.id })) != nil {
+                                                print("This message already exists bro.") // TODO: Get rid of or nah? Move to func maybe... we have IDs after all...
+                                            } else {
+                                                print("Appending \(newMessageObj) .--- ")
+                                                self.channelsStore[newChan.chanId]?.messages.append(newMessageObj)
+                                            }
                                         }
                                     }
                                 }

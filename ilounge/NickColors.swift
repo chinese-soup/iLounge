@@ -1,6 +1,6 @@
 //
 //  NickColors.swift
-//  liff
+//  ilounge
 //
 //  Created by Jakub Mach on 12.11.2023.
 //

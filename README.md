@@ -20,11 +20,11 @@
 * Nickname colors matching the ones in default The Lounge CSS (when Light appearance is set in iOS) and the Morning CSS (Dark appearance)  
 
 ## Limitations/not yet implemented/broken
-* Currently targetting iOS 17 and up (hoping to get this down to iOS 15) ([#3](issues/3)
-* Scrolling is broken and needs some fixing ([#2](issues/2)
-* Sending messages with Enter works, but scrolls the ScrollView arbitrarily ([#2](issues/2)
+* Currently targetting iOS 17 and up (hoping to get this down to iOS 15) ([#3](issues/3))
+* Scrolling is broken and needs some fixing ([#2](issues/2))
+* Sending messages with Enter works, but scrolls the ScrollView arbitrarily ([#2](issues/2))
 * Image/video uploading services
-* Need to escape Markdown coming in from messages ([#1](issues/1)
+* Need to escape Markdown coming in from messages ([#1](issues/1))
 * Need to make the Message/Channel/etc. models better and introduce models for other stuff
 * Currently user needs to force websockets or polling to successfully connect
 * Need to fix the networking in general

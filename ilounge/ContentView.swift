@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  liff
+//  ilounge
 //
 //  Created by Jakub Mach on 03.11.2023.
 //
