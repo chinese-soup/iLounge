@@ -1,7 +1,9 @@
 # iLounge
 **iLounge is a WIP a native iOS application that lets you connect to your [The Lounge](https://github.com/thelounge/thelounge) instance (self-hosted web IRC client).**
 
-This is basically my Swift/SwiftUI learning project, so don't expect much except for bugs and bad code.
+* This is basically my Swift/SwiftUI learning project, so don't expect much except for bugs and bad code.
+* Built using [SocketIO](https://github.com/socketio/socket.io-client-swift) and [Starscream](https://github.com/daltoniam/Starscream).
+
 
 # WIP
 ## Currently implemented
