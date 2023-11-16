@@ -147,11 +147,10 @@ class SocketManagerWrapper: ObservableObject {
 
         // Text
         let messageText = message["text"] as! String
-        let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
+        //let messageTextWithMarkdown = self.replaceLinksWithMarkdownHyperlinks(origMsgText: messageText)
 
         // Timestamp
         let messageTsStr = message["time"] as! String
-        var messageTs: String
         // If we can parse the timestamp, change it to correct format
         let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr)
 
@@ -325,7 +324,6 @@ class SocketManagerWrapper: ObservableObject {
 
                                         // Timestamp
                                         let messageTsStr = message["time"] as! String
-                                        var messageTs = messageTsStr
                                         // If we can parse the timestamp, change it to correct format
                                         /*if let messageDateUTC = self.parseTimestamp(isoDate: messageTsStr) {
                                             let outputFormatter = DateFormatter()
@@ -341,15 +339,13 @@ class SocketManagerWrapper: ObservableObject {
                                         // From
                                         var messageFinal: String // TODO: get rid of
                                         var messageFromObj: MessageFrom?
+
                                         if let msgfrom = message["from"] as? Dictionary<String, Any>,
                                            let messageFromNick = msgfrom["nick"] as? String,
                                            let messageFromMode = msgfrom["mode"] as? String {
-                                            //messageFinal = "\(messageTs) <\(messageNick)> \(
-                                            //MessageFrom(   )
                                             messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
-                                        }
-                                        else {
-                                            messageFinal = "\(messageTs) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
+                                        } else {
+                                            messageFinal = "\(messageTsStr) <SYSTEM> \(messageTextWithMarkdown)" // TODO: This is wrong
                                         }
 
                                         // Final message format

@@ -7,20 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9A6272E22B016EB50008BD9A /* NickColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6272E12B016EB50008BD9A /* NickColors.swift */; };
-		9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */; };
-		9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DD92AF916BE00E8B8BC /* SettingsView.swift */; };
-		9A719DDC2AF9906E00E8B8BC /* SocketMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */; };
-		9A719DDE2AF990D800E8B8BC /* RandomTestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */; };
-		9A719DE02AFA7C8B00E8B8BC /* BufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A719DDF2AFA7C8B00E8B8BC /* BufferView.swift */; };
-		9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C822AF5623E00E60E2F /* liffApp.swift */; };
-		9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C842AF5623E00E60E2F /* ContentView.swift */; };
-		9AAF7C872AF5623F00E60E2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AAF7C862AF5623F00E60E2F /* Assets.xcassets */; };
-		9AAF7C8A2AF5623F00E60E2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AAF7C892AF5623F00E60E2F /* Preview Assets.xcassets */; };
 		9AAF7C942AF5623F00E60E2F /* liffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C932AF5623F00E60E2F /* liffTests.swift */; };
 		9AAF7C9E2AF5623F00E60E2F /* liffUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C9D2AF5623F00E60E2F /* liffUITests.swift */; };
 		9AAF7CA02AF5623F00E60E2F /* liffUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAF7C9F2AF5623F00E60E2F /* liffUITestsLaunchTests.swift */; };
 		9AAF7CB02AF5880600E60E2F /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 9AAF7CAF2AF5880600E60E2F /* Starscream */; };
+		9AB979052B0649C40010F5DE /* NickColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB978FE2B0649810010F5DE /* NickColors.swift */; };
+		9AB979062B0649C80010F5DE /* liffApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB978FC2B0649810010F5DE /* liffApp.swift */; };
+		9AB979072B0649CA0010F5DE /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB978FB2B0649810010F5DE /* PreviewView.swift */; };
+		9AB979082B0649CB0010F5DE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB978FA2B0649810010F5DE /* SettingsView.swift */; };
+		9AB979092B0649CF0010F5DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AB978FD2B0649810010F5DE /* Assets.xcassets */; };
+		9AB9790A2B0649D20010F5DE /* RandomTestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979012B0649810010F5DE /* RandomTestingView.swift */; };
+		9AB9790B2B0649D40010F5DE /* SocketMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979022B0649810010F5DE /* SocketMan.swift */; };
+		9AB9790C2B0649D50010F5DE /* BufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979032B0649810010F5DE /* BufferView.swift */; };
+		9AB9790D2B0649D70010F5DE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979042B0649810010F5DE /* ContentView.swift */; };
 		9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9AD3D41F2AF647C700B13019 /* SocketIO */; };
 /* End PBXBuildFile section */
 
@@ -42,24 +41,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9A6272E12B016EB50008BD9A /* NickColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NickColors.swift; sourceTree = "<group>"; };
-		9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
-		9A719DD92AF916BE00E8B8BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketMan.swift; sourceTree = "<group>"; };
-		9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomTestingView.swift; sourceTree = "<group>"; };
-		9A719DDF2AFA7C8B00E8B8BC /* BufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferView.swift; sourceTree = "<group>"; };
-		9AAF7C7F2AF5623E00E60E2F /* liff.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liff.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9AAF7C822AF5623E00E60E2F /* liffApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffApp.swift; sourceTree = "<group>"; };
-		9AAF7C842AF5623E00E60E2F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		9AAF7C862AF5623F00E60E2F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		9AAF7C892AF5623F00E60E2F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		9AAF7C8F2AF5623F00E60E2F /* liffTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = liffTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AAF7C7F2AF5623E00E60E2F /* ilounge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ilounge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AAF7C8F2AF5623F00E60E2F /* iloungeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iloungeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C932AF5623F00E60E2F /* liffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffTests.swift; sourceTree = "<group>"; };
-		9AAF7C992AF5623F00E60E2F /* liffUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = liffUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AAF7C992AF5623F00E60E2F /* iloungeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iloungeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AAF7C9D2AF5623F00E60E2F /* liffUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffUITests.swift; sourceTree = "<group>"; };
 		9AAF7C9F2AF5623F00E60E2F /* liffUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9AB978FA2B0649810010F5DE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		9AB978FB2B0649810010F5DE /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		9AB978FC2B0649810010F5DE /* liffApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = liffApp.swift; sourceTree = "<group>"; };
+		9AB978FD2B0649810010F5DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9AB978FE2B0649810010F5DE /* NickColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NickColors.swift; sourceTree = "<group>"; };
+		9AB979002B0649810010F5DE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		9AB979012B0649810010F5DE /* RandomTestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomTestingView.swift; sourceTree = "<group>"; };
+		9AB979022B0649810010F5DE /* SocketMan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketMan.swift; sourceTree = "<group>"; };
+		9AB979032B0649810010F5DE /* BufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferView.swift; sourceTree = "<group>"; };
+		9AB979042B0649810010F5DE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = lithstuff.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		9AD3D4222AF7199500B13019 /* viewplayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = viewplayground.playground; path = ../../viewplayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,8 +90,8 @@
 		9AAF7C762AF5623E00E60E2F = {
 			isa = PBXGroup;
 			children = (
+				9AB978F92B0649810010F5DE /* ilounge */,
 				9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */,
-				9AAF7C812AF5623E00E60E2F /* liff */,
 				9AAF7C922AF5623F00E60E2F /* liffTests */,
 				9AAF7C9C2AF5623F00E60E2F /* liffUITests */,
 				9AAF7C802AF5623E00E60E2F /* Products */,
@@ -103,37 +101,11 @@
 		9AAF7C802AF5623E00E60E2F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9AAF7C7F2AF5623E00E60E2F /* liff.app */,
-				9AAF7C8F2AF5623F00E60E2F /* liffTests.xctest */,
-				9AAF7C992AF5623F00E60E2F /* liffUITests.xctest */,
+				9AAF7C7F2AF5623E00E60E2F /* ilounge.app */,
+				9AAF7C8F2AF5623F00E60E2F /* iloungeTests.xctest */,
+				9AAF7C992AF5623F00E60E2F /* iloungeUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		9AAF7C812AF5623E00E60E2F /* liff */ = {
-			isa = PBXGroup;
-			children = (
-				9A719DD92AF916BE00E8B8BC /* SettingsView.swift */,
-				9AD3D4222AF7199500B13019 /* viewplayground.playground */,
-				9AAF7C822AF5623E00E60E2F /* liffApp.swift */,
-				9AAF7C842AF5623E00E60E2F /* ContentView.swift */,
-				9AAF7C862AF5623F00E60E2F /* Assets.xcassets */,
-				9AAF7C882AF5623F00E60E2F /* Preview Content */,
-				9A719DD72AF90F9D00E8B8BC /* PreviewView.swift */,
-				9A719DDB2AF9906E00E8B8BC /* SocketMan.swift */,
-				9A719DDD2AF990D800E8B8BC /* RandomTestingView.swift */,
-				9A719DDF2AFA7C8B00E8B8BC /* BufferView.swift */,
-				9A6272E12B016EB50008BD9A /* NickColors.swift */,
-			);
-			path = liff;
-			sourceTree = "<group>";
-		};
-		9AAF7C882AF5623F00E60E2F /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				9AAF7C892AF5623F00E60E2F /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		9AAF7C922AF5623F00E60E2F /* liffTests */ = {
@@ -153,12 +125,37 @@
 			path = liffUITests;
 			sourceTree = "<group>";
 		};
+		9AB978F92B0649810010F5DE /* ilounge */ = {
+			isa = PBXGroup;
+			children = (
+				9AB978FA2B0649810010F5DE /* SettingsView.swift */,
+				9AB978FB2B0649810010F5DE /* PreviewView.swift */,
+				9AB978FC2B0649810010F5DE /* liffApp.swift */,
+				9AB978FD2B0649810010F5DE /* Assets.xcassets */,
+				9AB978FE2B0649810010F5DE /* NickColors.swift */,
+				9AB978FF2B0649810010F5DE /* Preview Content */,
+				9AB979012B0649810010F5DE /* RandomTestingView.swift */,
+				9AB979022B0649810010F5DE /* SocketMan.swift */,
+				9AB979032B0649810010F5DE /* BufferView.swift */,
+				9AB979042B0649810010F5DE /* ContentView.swift */,
+			);
+			path = ilounge;
+			sourceTree = "<group>";
+		};
+		9AB978FF2B0649810010F5DE /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				9AB979002B0649810010F5DE /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9AAF7C7E2AF5623E00E60E2F /* liff */ = {
+		9AAF7C7E2AF5623E00E60E2F /* ilounge */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AAF7CA32AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "liff" */;
+			buildConfigurationList = 9AAF7CA32AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "ilounge" */;
 			buildPhases = (
 				9AAF7C7B2AF5623E00E60E2F /* Sources */,
 				9AAF7C7C2AF5623E00E60E2F /* Frameworks */,
@@ -168,18 +165,18 @@
 			);
 			dependencies = (
 			);
-			name = liff;
+			name = ilounge;
 			packageProductDependencies = (
 				9AAF7CAF2AF5880600E60E2F /* Starscream */,
 				9AD3D41F2AF647C700B13019 /* SocketIO */,
 			);
 			productName = liff;
-			productReference = 9AAF7C7F2AF5623E00E60E2F /* liff.app */;
+			productReference = 9AAF7C7F2AF5623E00E60E2F /* ilounge.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9AAF7C8E2AF5623F00E60E2F /* liffTests */ = {
+		9AAF7C8E2AF5623F00E60E2F /* iloungeTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AAF7CA62AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "liffTests" */;
+			buildConfigurationList = 9AAF7CA62AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "iloungeTests" */;
 			buildPhases = (
 				9AAF7C8B2AF5623F00E60E2F /* Sources */,
 				9AAF7C8C2AF5623F00E60E2F /* Frameworks */,
@@ -190,14 +187,14 @@
 			dependencies = (
 				9AAF7C912AF5623F00E60E2F /* PBXTargetDependency */,
 			);
-			name = liffTests;
+			name = iloungeTests;
 			productName = liffTests;
-			productReference = 9AAF7C8F2AF5623F00E60E2F /* liffTests.xctest */;
+			productReference = 9AAF7C8F2AF5623F00E60E2F /* iloungeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		9AAF7C982AF5623F00E60E2F /* liffUITests */ = {
+		9AAF7C982AF5623F00E60E2F /* iloungeUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AAF7CA92AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "liffUITests" */;
+			buildConfigurationList = 9AAF7CA92AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "iloungeUITests" */;
 			buildPhases = (
 				9AAF7C952AF5623F00E60E2F /* Sources */,
 				9AAF7C962AF5623F00E60E2F /* Frameworks */,
@@ -208,9 +205,9 @@
 			dependencies = (
 				9AAF7C9B2AF5623F00E60E2F /* PBXTargetDependency */,
 			);
-			name = liffUITests;
+			name = iloungeUITests;
 			productName = liffUITests;
-			productReference = 9AAF7C992AF5623F00E60E2F /* liffUITests.xctest */;
+			productReference = 9AAF7C992AF5623F00E60E2F /* iloungeUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -237,7 +234,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9AAF7C7A2AF5623E00E60E2F /* Build configuration list for PBXProject "liff" */;
+			buildConfigurationList = 9AAF7C7A2AF5623E00E60E2F /* Build configuration list for PBXProject "ilounge" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -254,9 +251,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9AAF7C7E2AF5623E00E60E2F /* liff */,
-				9AAF7C8E2AF5623F00E60E2F /* liffTests */,
-				9AAF7C982AF5623F00E60E2F /* liffUITests */,
+				9AAF7C7E2AF5623E00E60E2F /* ilounge */,
+				9AAF7C8E2AF5623F00E60E2F /* iloungeTests */,
+				9AAF7C982AF5623F00E60E2F /* iloungeUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -266,8 +263,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9AAF7C8A2AF5623F00E60E2F /* Preview Assets.xcassets in Resources */,
-				9AAF7C872AF5623F00E60E2F /* Assets.xcassets in Resources */,
+				9AB979092B0649CF0010F5DE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,14 +288,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A719DD82AF90F9D00E8B8BC /* PreviewView.swift in Sources */,
-				9A719DE02AFA7C8B00E8B8BC /* BufferView.swift in Sources */,
-				9A6272E22B016EB50008BD9A /* NickColors.swift in Sources */,
-				9A719DDC2AF9906E00E8B8BC /* SocketMan.swift in Sources */,
-				9A719DDE2AF990D800E8B8BC /* RandomTestingView.swift in Sources */,
-				9AAF7C852AF5623E00E60E2F /* ContentView.swift in Sources */,
-				9A719DDA2AF916BE00E8B8BC /* SettingsView.swift in Sources */,
-				9AAF7C832AF5623E00E60E2F /* liffApp.swift in Sources */,
+				9AB979062B0649C80010F5DE /* liffApp.swift in Sources */,
+				9AB9790C2B0649D50010F5DE /* BufferView.swift in Sources */,
+				9AB9790D2B0649D70010F5DE /* ContentView.swift in Sources */,
+				9AB9790B2B0649D40010F5DE /* SocketMan.swift in Sources */,
+				9AB9790A2B0649D20010F5DE /* RandomTestingView.swift in Sources */,
+				9AB979082B0649CB0010F5DE /* SettingsView.swift in Sources */,
+				9AB979052B0649C40010F5DE /* NickColors.swift in Sources */,
+				9AB979072B0649CA0010F5DE /* PreviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,12 +321,12 @@
 /* Begin PBXTargetDependency section */
 		9AAF7C912AF5623F00E60E2F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9AAF7C7E2AF5623E00E60E2F /* liff */;
+			target = 9AAF7C7E2AF5623E00E60E2F /* ilounge */;
 			targetProxy = 9AAF7C902AF5623F00E60E2F /* PBXContainerItemProxy */;
 		};
 		9AAF7C9B2AF5623F00E60E2F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9AAF7C7E2AF5623E00E60E2F /* liff */;
+			target = 9AAF7C7E2AF5623E00E60E2F /* ilounge */;
 			targetProxy = 9AAF7C9A2AF5623F00E60E2F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -463,7 +459,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"liff/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ilounge/Preview Content\"";
 				DEVELOPMENT_TEAM = TH4W2K4N2D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -479,7 +475,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/liff",
+					"$(PROJECT_DIR)/ilounge",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.liff;
@@ -502,7 +498,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"liff/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ilounge/Preview Content\"";
 				DEVELOPMENT_TEAM = TH4W2K4N2D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -518,7 +514,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/liff",
+					"$(PROJECT_DIR)/ilounge",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = jakubma.ch.liff;
@@ -548,7 +544,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liff.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/liff";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ilounge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ilounge";
 			};
 			name = Debug;
 		};
@@ -568,7 +564,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liff.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/liff";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ilounge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ilounge";
 			};
 			name = Release;
 		};
@@ -611,7 +607,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9AAF7C7A2AF5623E00E60E2F /* Build configuration list for PBXProject "liff" */ = {
+		9AAF7C7A2AF5623E00E60E2F /* Build configuration list for PBXProject "ilounge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AAF7CA12AF5623F00E60E2F /* Debug */,
@@ -620,7 +616,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AAF7CA32AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "liff" */ = {
+		9AAF7CA32AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "ilounge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AAF7CA42AF5623F00E60E2F /* Debug */,
@@ -629,7 +625,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AAF7CA62AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "liffTests" */ = {
+		9AAF7CA62AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "iloungeTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AAF7CA72AF5623F00E60E2F /* Debug */,
@@ -638,7 +634,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AAF7CA92AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "liffUITests" */ = {
+		9AAF7CA92AF5623F00E60E2F /* Build configuration list for PBXNativeTarget "iloungeUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AAF7CAA2AF5623F00E60E2F /* Debug */,
