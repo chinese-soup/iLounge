@@ -11,17 +11,6 @@ import SocketIO
 import CoreData
 
 
-struct LoungeText: View {
-    let text: String
-    @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
-
-    var body: some View {
-        Text(text)
-            .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
-    }
-}
-
-
 struct ContentView: View {
     // TODO: Clean up these
     @State private var messageInput = ""
@@ -42,7 +31,7 @@ struct ContentView: View {
     @State public var scrollProxy: ScrollViewProxy? = nil
     @State private var selectedEntry: String? = nil
 
-    @State private var currentPreviewURL = "https://picsum.photos/600" // TODO: Remove
+    @State private var currentPreviewURL = ""
 
     // Focus state to keep the text input field focused after send
     //@ObservedObject var webSocketManager = WebSocketManager(password: "")
@@ -162,13 +151,12 @@ struct ContentView: View {
                         Spacer()
                     }
                     ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
-                            //Text("\(key): \(socketManager.channelsStore[key]?.chanName ?? "asdf")")
                         HStack(alignment: .top) {
                             if showTimestampsSetting {
                                 if let msgParsedDate = msg.timeParsed {
-                                    /*Text(.init(String(msg.id))).onTapGesture {
+                                    Text(.init(String(msg.id))).onTapGesture {
                                         proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
-                                    }*/
+                                    }
                                     LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
                                         .foregroundColor(.gray)
                                 } else {
@@ -183,9 +171,10 @@ struct ContentView: View {
                                 LoungeText(text: "SYSTEM")
                             }
 
-                            LoungeText(text: .init(msg.text)).id(msg.id) // id here is important for the scroll proxy to work apparently
+                            Text(.init(msg.text)) // id here is important for the scroll proxy to work apparently
                                 .padding(.horizontal)
                                 .textSelection(.enabled)
+                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
                                 .environment(\.openURL, OpenURLAction { url in
                                     handleUserClickedLink(url: url)
                                     return .handled
@@ -209,18 +198,25 @@ struct ContentView: View {
                                  //selectedEntry = msg
                                  scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                              }*/
-                        }.onTapGesture {
+                        }
+                        .onTapGesture {
                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                         }
+                        .id(msg.id)
                         .contextMenu {
                             Button {
+                                let pasteboard = UIPasteboard.general
+                                if let msgParsedDate = msg.timeParsed {
+                                    let timestamp = formatTimestamp(parsedDate: msgParsedDate)
+                                    pasteboard.string = "\(timestamp) <\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
+                                }
                             } label: {
                                 Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
 
                             }
                             Button {
                                 let pasteboard = UIPasteboard.general
-                                pasteboard.string = "\(String(describing: msg.from)) \(msg.text)" // TODO: lol
+                                pasteboard.string = "<\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
                             } label: {
                                 Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
                             }
@@ -238,13 +234,13 @@ struct ContentView: View {
                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                         }
                     }
-                }.scrollTargetLayout()
-            }
+                }
+            }.scrollTargetLayout()
         }
-        .scrollPosition(id: $scrolledID)
-        /*.onChange(of: scrolledID) { oldValue, newValue in
+        .scrollPosition(id: $scrolledID, anchor: .bottom)
+        .onChange(of: scrolledID) { oldValue, newValue in
             print(newValue ?? "No value set")
-        }*/
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 

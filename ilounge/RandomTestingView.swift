@@ -30,33 +30,58 @@ struct TestView: View {
             return fonts
         }
 
-
-
     @State private var offset = CGFloat.zero
-
+    @State private var scrollAtBottom = false
 
     @State private var idcko: Int?
     var body: some View {
 
-        ScrollView {
-            VStack {
-                ForEach(0..<100, id: \.self) { i in
-                    Text("Item \(i)").padding()
+        /*ScrollView {
+         LazyVStack {
+         ForEach(0..<100, id: \.self) { i in
+         Text("Item \(i)").padding()
+         }
+         Color.clear
+         .frame(width: 0, height: 0, alignment: .bottom)
+         .onAppear {
+         scrollAtBottom = true
+         print("Scroll at bottom = true")
+         }
+         .onDisappear {
+         scrollAtBottom = false
+         print("Scroll at bottom = false")
+         }
+         }
+         }*/
+        /*.onPreferenceChange(ViewOffsetKey.self) {
+         //print("\($0)")
+         //print("offset >> \($0)")
+         }*/
+
+        let array: [String] = (0...100).map { "\($0)" }
+        var onEndOfList = true
+
+        List {
+            ForEach(array, id: \.self) { element in
+                HStack {
+                    Text(element)
+                    Text("blabala")
                 }
-            }.background(GeometryReader {
-                Color.clear.preference(key: ViewOffsetKey.self,
-                    value: -$0.frame(in: .named("scroll")).origin.y)
-            })
-            /*.onPreferenceChange(ViewOffsetKey.self) {
-                //print("\($0)")
-                //print("offset >> \($0)")
-            }*/
-        }.coordinateSpace(name: "scroll")
-        .onChange(of: idcko) { oldValue, newValue in
-            print(newValue ?? "No value set")
-        }
-        .scrollPosition(id: $idcko)
+            }
+            Color.clear
+                .frame(width: 0, height: 0, alignment: .bottom)
+                .onAppear {
+                    onEndOfList = true
+                    print("End of list")
+                }
+                .onDisappear {
+                    onEndOfList = false
+                    print("NOT end of list")
+                }
+        }.listStyle(.plain)
+           
     }
+       }
 
         /*List(self.availableFonts(), id: \.self) { fontName in
                    Text(fontName)
@@ -84,7 +109,7 @@ struct TestView: View {
             Color.blue
         }
         .frame(width: self.width)*/
-    }
+
 
 struct ViewOffsetKey: PreferenceKey {
     typealias Value = CGFloat

@@ -298,13 +298,11 @@ class SocketManagerWrapper: ObservableObject {
         socket?.defaultSocket.on("connect") { data, ack in
             print("connect \(data)")
             if let message = data.first as? String {
+                print("connect event: \(String(describing: message))")
             }
         }
         
         socket?.defaultSocket.on("init") {data, ack in
-            //print("INIT \(String(describing:data))")
-            //let typeof = type(of: data)
-            
             if let message = data.first as? Dictionary<String,Any>,
                let networks = message["networks"] as? Array<Dictionary<String,Any>> {
                 for network in networks {
