@@ -31,7 +31,9 @@ struct ContentView: View {
     @State public var scrollProxy: ScrollViewProxy? = nil
     @State private var selectedEntry: String? = nil
 
+    // PreviewView Bidnings
     @State private var currentPreviewURL = ""
+    @State private var currentPreviewIsVideo = false
 
     // Focus state to keep the text input field focused after send
     //@ObservedObject var webSocketManager = WebSocketManager(password: "")
@@ -138,8 +140,8 @@ struct ContentView: View {
     }
 
     var messageView: some View {
-        ScrollView {
-            ScrollViewReader { proxy in
+        ScrollViewReader { proxy in
+            ScrollView {
                 LazyVStack(alignment: .leading, spacing: 5) {
                     HStack {
                         Spacer()
@@ -179,25 +181,6 @@ struct ContentView: View {
                                     handleUserClickedLink(url: url)
                                     return .handled
                                 })
-                            /*if (msg.id == socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
-                            {
-                                Color.clear
-                                    .frame(width: 0, height: 0, alignment: .bottom)
-                                    .onAppear {
-                                        lastMessageVisible = true
-                                        print("last msg is now = \(lastMessageVisible)")
-                                    }
-                                    .onDisappear {
-                                        lastMessageVisible = false
-                                        print("last msg is now = \(lastMessageVisible)")
-                                    }
-                            }*/
-                            /*.onTapGesture {
-                                 //let pasteboard = UIPasteboard.general
-                                 //pasteboard.string = msg
-                                 //selectedEntry = msg
-                                 scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
-                             }*/
                         }
                         .onTapGesture {
                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
@@ -273,7 +256,7 @@ struct ContentView: View {
                 // TODO: Probably make the settings sheet not be a sheet?
                 // TODO: ^ Dunno navigation instead? We shall see about it.
                 .sheet(isPresented: $isPreviewViewVisible){
-                    PreviewView(isPreviewViewVisible: $isPreviewViewVisible, imageURL: $currentPreviewURL)
+                    PreviewView(isPreviewViewVisible: $isPreviewViewVisible, imageURL: $currentPreviewURL, isVideo: $currentPreviewIsVideo)
                 }
                 .sheet(isPresented: $isTestViewVisible) {
                     TestView(isTestViewVisible: $isTestViewVisible)
@@ -294,6 +277,11 @@ struct ContentView: View {
     func handleUserClickedLink(url: URL) {
         if isImage(text: url.absoluteString) {
             currentPreviewURL = url.absoluteString
+            currentPreviewIsVideo = false
+            isPreviewViewVisible.toggle()
+        } else if isVideo(text: url.absoluteString) {
+            currentPreviewURL = url.absoluteString
+            currentPreviewIsVideo = true
             isPreviewViewVisible.toggle()
         }
         else {
@@ -312,15 +300,6 @@ struct ContentView: View {
             print("isTestViewVisible = \(isTestViewVisible)")
             isTestViewVisible.toggle()
         }
-    }
-
-    func isImage(text: String) -> Bool {
-        /* A dumb way to check if URL could be an image to open in a preview instead of the web browser */
-        let letImagePattern = #"(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*\.(?:jpg|jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?"#
-        if text.range(of: letImagePattern, options: [.regularExpression, .caseInsensitive]) != nil {
-            return true
-        }
-        return false
     }
 }
 
