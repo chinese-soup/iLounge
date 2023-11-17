@@ -161,8 +161,6 @@ class SocketManagerWrapper: ObservableObject {
         if let msgfrom = message["from"] as? Dictionary<String, Any>,
            let messageFromNick = msgfrom["nick"] as? String,
            let messageFromMode = msgfrom["mode"] as? String {
-            //messageFinal = "\(messageTs) <\(messageNick)> \(
-            //MessageFrom(   )
             messageFromObj = MessageFrom(mode: messageFromMode, nick: messageFromNick)
         }
         // Final message format
@@ -205,7 +203,6 @@ class SocketManagerWrapper: ObservableObject {
                                     self.channelsStore[channelId]?.messages.append(newMessageObj)
                                 }
                             }
-
                         }
                     }
                 }
@@ -214,6 +211,15 @@ class SocketManagerWrapper: ObservableObject {
 
         socket?.defaultSocket.on("names") { data, ack in
             // TODO: names
+        }
+
+        socket?.defaultSocket.on("open") { data, ack in
+            print("open")
+            if let chanId = data.first as? Int {
+                print("Got 'open' event with channelId = \(chanId), opening that buffer.")
+                //self.openBuffer(channel_id: chanId)
+            }
+
         }
 
         socket?.defaultSocket.on("msg") { data, ack in

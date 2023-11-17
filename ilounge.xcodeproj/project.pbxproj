@@ -20,6 +20,7 @@
 		9AB9790B2B0649D40010F5DE /* SocketMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979022B0649810010F5DE /* SocketMan.swift */; };
 		9AB9790C2B0649D50010F5DE /* BufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979032B0649810010F5DE /* BufferView.swift */; };
 		9AB9790D2B0649D70010F5DE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB979042B0649810010F5DE /* ContentView.swift */; };
+		9AB9790F2B06A1850010F5DE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9790E2B06A1850010F5DE /* Utils.swift */; };
 		9AD3D4202AF647C700B13019 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9AD3D41F2AF647C700B13019 /* SocketIO */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 		9AB979022B0649810010F5DE /* SocketMan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketMan.swift; sourceTree = "<group>"; };
 		9AB979032B0649810010F5DE /* BufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferView.swift; sourceTree = "<group>"; };
 		9AB979042B0649810010F5DE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9AB9790E2B06A1850010F5DE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		9AD3D4212AF6FB0F00B13019 /* lithstuff.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = lithstuff.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
@@ -138,6 +140,7 @@
 				9AB979022B0649810010F5DE /* SocketMan.swift */,
 				9AB979032B0649810010F5DE /* BufferView.swift */,
 				9AB979042B0649810010F5DE /* ContentView.swift */,
+				9AB9790E2B06A1850010F5DE /* Utils.swift */,
 			);
 			path = ilounge;
 			sourceTree = "<group>";
@@ -290,6 +293,7 @@
 			files = (
 				9AB979062B0649C80010F5DE /* liffApp.swift in Sources */,
 				9AB9790C2B0649D50010F5DE /* BufferView.swift in Sources */,
+				9AB9790F2B06A1850010F5DE /* Utils.swift in Sources */,
 				9AB9790D2B0649D70010F5DE /* ContentView.swift in Sources */,
 				9AB9790B2B0649D40010F5DE /* SocketMan.swift in Sources */,
 				9AB9790A2B0649D20010F5DE /* RandomTestingView.swift in Sources */,

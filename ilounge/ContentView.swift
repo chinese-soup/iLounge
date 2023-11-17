@@ -10,6 +10,18 @@ import Starscream
 import SocketIO
 import CoreData
 
+
+struct LoungeText: View {
+    let text: String
+    @AppStorage("loungeUseMonospaceFont") private var useMonospaceFont: Bool = false
+
+    var body: some View {
+        Text(text)
+            .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+    }
+}
+
+
 struct ContentView: View {
     // TODO: Clean up these
     @State private var messageInput = ""
@@ -140,7 +152,6 @@ struct ContentView: View {
         ScrollView {
             ScrollViewReader { proxy in
                 LazyVStack(alignment: .leading, spacing: 5) {
-                    // TODO: TEMP
                     HStack {
                         Spacer()
                         Button(action: {
@@ -158,29 +169,22 @@ struct ContentView: View {
                                     /*Text(.init(String(msg.id))).onTapGesture {
                                         proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
                                     }*/
-                                    Text(formatTimestamp(parsedDate: msgParsedDate))
-                                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                    LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
                                         .foregroundColor(.gray)
-
                                 } else {
-                                    Text("Unknown TS")
-                                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                    LoungeText(text: "Unknown TS")
                                 }
                             }
 
                             if let msgNick = msg.from {
-                                //Text(msgNick.nick.count > nickLengthSetting ? String(msgNick.nick.prefix(nickLengthSetting)) : msgNick.nick)
-                                Text(truncateNickname(origNickname: msgNick.nick))
-                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                LoungeText(text: truncateNickname(origNickname: msgNick.nick))
                                     .foregroundColor(getNicknameColor(nickname: msgNick.nick))
                             } else {
-                                Text("SYSTEM")
-                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                LoungeText(text: "SYSTEM")
                             }
 
-                            Text(.init(msg.text)).id(msg.id) // id here is important for the scroll proxy to work apparently
+                            LoungeText(text: .init(msg.text)).id(msg.id) // id here is important for the scroll proxy to work apparently
                                 .padding(.horizontal)
-                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default))
                                 .textSelection(.enabled)
                                 .environment(\.openURL, OpenURLAction { url in
                                     handleUserClickedLink(url: url)
@@ -200,10 +204,10 @@ struct ContentView: View {
                                     }
                             }*/
                             /*.onTapGesture {
-                             //let pasteboard = UIPasteboard.general
-                             //pasteboard.string = msg
-                             //selectedEntry = msg
-                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                                 //let pasteboard = UIPasteboard.general
+                                 //pasteboard.string = msg
+                                 //selectedEntry = msg
+                                 scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                              }*/
                         }.onTapGesture {
                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
@@ -229,14 +233,12 @@ struct ContentView: View {
                     .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
                         scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id ?? 0
                     }
-
                     .onChange(of: socketManager.currentBuffer) {
                         withAnimation {
                             scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                         }
                     }
                 }.scrollTargetLayout()
-
             }
         }
         .scrollPosition(id: $scrolledID)
@@ -259,10 +261,9 @@ struct ContentView: View {
                             withAnimation {
                                 isBufferViewVisible.toggle()
                             }
-                            print("isBufferViewVisible = ", isBufferViewVisible)
                         }
                     }) {
-                        Image(systemName: "menucard") //sidebar.left
+                        Image(systemName: "menucard") // sidebar.left
                     },
                     
                     trailing: Button(action: {
@@ -270,7 +271,6 @@ struct ContentView: View {
                     }) {
                         Image(systemName: "gear")
                     }
-                    
                 )
 
                 // TODO: Remove this sheet stuff?
