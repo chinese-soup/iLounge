@@ -59,7 +59,7 @@ class SocketManagerWrapper: ObservableObject {
         let lastMessageId = channelsStore[currentBuffer]?.messages.first?.id as? Int
         //.sorted(by: { $0.id < $1.id })
         print("[LoadMoreMessagesInCurrentBuffer]  LASt mesasged id = \(String(describing: lastMessageId))")
-        if(lastMessageId == 0) { // TODO: This is probably a cause for 1) Start the app 2) Open buffer 3) Open buffer again -> old messsages are pretending to be new messages at the bottom (of course not counting the fact we append them at the bottom instead of sorting by time / id )
+        if lastMessageId == 0 { // TODO: This is probably a cause for 1) Start the app 2) Open buffer 3) Open buffer again -> old messsages are pretending to be new messages at the bottom (of course not counting the fact we append them at the bottom instead of sorting by time / id )
 
             print("[LoadMoreMessagesInCurrentBuffer]  Oh no, lastmsgid == 0")
         } else {

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9AAF7C7E2AF5623E00E60E2F"
-               BuildableName = "ilounge.app"
+               BuildableName = "iLounge.app"
                BlueprintName = "ilounge"
                ReferencedContainer = "container:ilounge.xcodeproj">
             </BuildableReference>
@@ -68,7 +68,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9AAF7C7E2AF5623E00E60E2F"
-            BuildableName = "ilounge.app"
+            BuildableName = "iLounge.app"
             BlueprintName = "ilounge"
             ReferencedContainer = "container:ilounge.xcodeproj">
          </BuildableReference>
@@ -85,7 +85,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9AAF7C7E2AF5623E00E60E2F"
-            BuildableName = "ilounge.app"
+            BuildableName = "iLounge.app"
             BlueprintName = "ilounge"
             ReferencedContainer = "container:ilounge.xcodeproj">
          </BuildableReference>

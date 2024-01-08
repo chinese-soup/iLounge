@@ -209,8 +209,24 @@ struct ContentView: View {
                     .onAppear {
                         scrollProxy = proxy
                     }
-                    .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages) {
-                        scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id ?? 0
+                    .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last) { oldValue, newValue in
+                        if let oldMessageId = oldValue?.id {
+
+                            // We are scrolled all the way down to the (OLD)last message, let's scroll since we new have a new one to scroll even further down to.
+                            if oldMessageId == scrolledID {
+
+                                // Set the scrolledID variable, since we are forcing a scroll with scrollTo()
+                                scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id
+
+                                withAnimation {
+                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                                }
+                            } else {
+                                print("I am not scrolling for you, you are probably reading the backlog. TODO: here we could show some sort of highlight of new activity in the UI or sth")
+                            }
+                        }
+
+                        print("\n [AFTER MESSAGE] scrolledID is = \(String(describing: scrolledID)), \n the last messgae is = \(String(describing: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id))")
                     }
                     .onChange(of: socketManager.currentBuffer) {
                         withAnimation {
@@ -219,12 +235,20 @@ struct ContentView: View {
                     }
                 }
             }.scrollTargetLayout()
+                .scrollDismissesKeyboard(.immediately)
+                /*.toolbar {
+                    ToolbarItem(placement: .keyboard) {
+
+                    }
+                }*/
         }
-        .scrollPosition(id: $scrolledID, anchor: .bottom)
+        .scrollPosition(id: $scrolledID, anchor: .bottomLeading)
         .onChange(of: scrolledID) { oldValue, newValue in
             print(newValue ?? "No value set")
         }
+
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea(.keyboard)
     }
 
     var body: some View {
@@ -268,7 +292,6 @@ struct ContentView: View {
                     }
                 }.navigationTitle(socketManager.channelsStore[socketManager.currentBuffer]?.chanName ?? "iLounge")
             }
-            .scrollDismissesKeyboard(.interactively)
 
             BufferView(isBufferViewVisible: $isBufferViewVisible, socketManager: socketManager)
         }
