@@ -19,7 +19,7 @@ struct PreviewView: View {
     var body: some View {
         if isVideo {
             VideoPlayer(player: AVPlayer(url: URL(string: imageURL)!)) {
-                // TODO: 
+                // TODO: Sound
             }
         } else {
             AsyncImage(

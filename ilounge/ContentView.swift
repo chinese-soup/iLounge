@@ -156,9 +156,9 @@ struct ContentView: View {
                         HStack(alignment: .top) {
                             if showTimestampsSetting {
                                 if let msgParsedDate = msg.timeParsed {
-                                    Text(.init(String(msg.id))).onTapGesture {
+                                    /*Text(.init(String(msg.id))).onTapGesture {
                                         proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
-                                    }
+                                    }*/
                                     LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
                                         .foregroundColor(.gray)
                                 } else {
@@ -183,7 +183,7 @@ struct ContentView: View {
                                 })
                         }
                         .onTapGesture {
-                            scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                            //scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
                         }
                         .id(msg.id)
                         .contextMenu {
@@ -214,7 +214,6 @@ struct ContentView: View {
 
                             // We are scrolled all the way down to the (OLD)last message, let's scroll since we new have a new one to scroll even further down to.
                             if oldMessageId == scrolledID {
-
                                 // Set the scrolledID variable, since we are forcing a scroll with scrollTo()
                                 scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id
 
@@ -230,12 +229,12 @@ struct ContentView: View {
                     }
                     .onChange(of: socketManager.currentBuffer) {
                         withAnimation {
-                            scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                            scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottomTrailing)
                         }
                     }
                 }
             }.scrollTargetLayout()
-                .scrollDismissesKeyboard(.immediately)
+                .scrollDismissesKeyboard(.automatic)
                 /*.toolbar {
                     ToolbarItem(placement: .keyboard) {
 
@@ -243,10 +242,9 @@ struct ContentView: View {
                 }*/
         }
         .scrollPosition(id: $scrolledID, anchor: .bottomLeading)
-        .onChange(of: scrolledID) { oldValue, newValue in
-            print(newValue ?? "No value set")
-        }
-
+        /*.onChange(of: scrolledID) { oldValue, newValue in
+            //print(newValue ?? "No value set")
+        }*/
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea(.keyboard)
     }
