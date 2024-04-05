@@ -141,9 +141,9 @@ struct ContentView: View {
 
     var messageView: some View {
         ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 5) {
-                    HStack {
+            //ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    /*HStack {
                         Spacer()
                         Button(action: {
                             socketManager.loadMoreMessagesInCurrentBuffer()
@@ -151,14 +151,15 @@ struct ContentView: View {
                             Label("Load more messages", systemImage: "arrow.circlepath").padding()
                         })
                         Spacer()
-                    }
-                    ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
+                    }*/
+                    List(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
                         HStack(alignment: .top) {
+                            Text(.init(String(msg.id))).onTapGesture {
+                                proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
+                            }
+
                             if showTimestampsSetting {
                                 if let msgParsedDate = msg.timeParsed {
-                                    /*Text(.init(String(msg.id))).onTapGesture {
-                                        proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
-                                    }*/
                                     LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
                                         .foregroundColor(.gray)
                                 } else {
@@ -182,8 +183,24 @@ struct ContentView: View {
                                     return .handled
                                 })
                         }
+                        .padding(
+                            EdgeInsets(
+                                top: 0,
+                                leading: 0,
+                                bottom: 0,
+                                trailing: 0
+                            )
+                        )
+                        .listRowInsets(EdgeInsets(top: 0,
+                                                  leading: 0,
+                                                  bottom: 0,
+                                                  trailing: 0
+                                                 ))
                         .onTapGesture {
                             //scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                        }
+                        .refreshable {
+                            socketManager.loadMoreMessagesInCurrentBuffer()
                         }
                         .id(msg.id)
                         .contextMenu {
@@ -204,7 +221,11 @@ struct ContentView: View {
                                 Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
                             }
                         }
-                    }
+                    }.listStyle(.plain)
+                        .listRowSpacing(1.0)
+                        .listSectionSpacing(2.0)
+                        .listRowSeparator(.hidden)
+                        .scrollDismissesKeyboard(.never)
                     // TODO: Auto-scroll needs some love and care
                     .onAppear {
                         scrollProxy = proxy
@@ -233,8 +254,8 @@ struct ContentView: View {
                         }
                     }
                 }
-            }.scrollTargetLayout()
-                .scrollDismissesKeyboard(.automatic)
+            ///*.scrollTargetLayout()
+                //.scrollDismissesKeyboard(.automatic)
                 /*.toolbar {
                     ToolbarItem(placement: .keyboard) {
 
