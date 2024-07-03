@@ -138,144 +138,232 @@ struct ContentView: View {
         }
         .padding(.bottom)
     }
-
-    var messageView: some View {
-        ScrollViewReader { proxy in
-            //ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    /*HStack {
-                        Spacer()
-                        Button(action: {
-                            socketManager.loadMoreMessagesInCurrentBuffer()
-                        }, label: {
-                            Label("Load more messages", systemImage: "arrow.circlepath").padding()
+    
+    /*ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            /*HStack {
+             Spacer()
+             Button(action: {
+             socketManager.loadMoreMessagesInCurrentBuffer()
+             }, label: {
+             Label("Load more messages", systemImage: "arrow.circlepath").padding()
+             })
+             Spacer()
+             }*/
+            ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
+                HStack(alignment: .top) {
+                    Text(.init(String(msg.id))).onTapGesture {
+                        proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
+                    }
+                    
+                    if showTimestampsSetting {
+                        if let msgParsedDate = msg.timeParsed {
+                            LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
+                                .foregroundColor(.gray)
+                        } else {
+                            LoungeText(text: "Unknown TS")
+                        }
+                    }
+                    
+                    if let msgNick = msg.from {
+                        LoungeText(text: truncateNickname(origNickname: msgNick.nick))
+                            .foregroundColor(getNicknameColor(nickname: msgNick.nick))
+                    } else {
+                        LoungeText(text: "SYSTEM")
+                    }
+                    
+                    Text(.init(msg.text)) // id here is important for the scroll proxy to work apparently
+                        .padding(.horizontal)
+                        .textSelection(.enabled)
+                        .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                        .environment(\.openURL, OpenURLAction { url in
+                            handleUserClickedLink(url: url)
+                            return .handled
                         })
-                        Spacer()
-                    }*/
-                    List(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
-                        HStack(alignment: .top) {
-                            Text(.init(String(msg.id))).onTapGesture {
-                                proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
-                            }
-
-                            if showTimestampsSetting {
-                                if let msgParsedDate = msg.timeParsed {
-                                    LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
-                                        .foregroundColor(.gray)
-                                } else {
-                                    LoungeText(text: "Unknown TS")
-                                }
-                            }
-
-                            if let msgNick = msg.from {
-                                LoungeText(text: truncateNickname(origNickname: msgNick.nick))
-                                    .foregroundColor(getNicknameColor(nickname: msgNick.nick))
-                            } else {
-                                LoungeText(text: "SYSTEM")
-                            }
-
-                            Text(.init(msg.text)) // id here is important for the scroll proxy to work apparently
-                                .padding(.horizontal)
-                                .textSelection(.enabled)
-                                .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
-                                .environment(\.openURL, OpenURLAction { url in
-                                    handleUserClickedLink(url: url)
-                                    return .handled
-                                })
+                }
+                .padding(
+                    EdgeInsets(
+                        top: 0,
+                        leading: 0,
+                        bottom: 0,
+                        trailing: 0
+                    )
+                )
+                .listRowInsets(EdgeInsets(top: 0,
+                                          leading: 0,
+                                          bottom: 0,
+                                          trailing: 0
+                                         ))
+                .onTapGesture {
+                    //scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                }
+                .refreshable {
+                    socketManager.loadMoreMessagesInCurrentBuffer()
+                }
+                .id(msg.id)
+                .contextMenu {
+                    Button {
+                        let pasteboard = UIPasteboard.general
+                        if let msgParsedDate = msg.timeParsed {
+                            let timestamp = formatTimestamp(parsedDate: msgParsedDate)
+                            pasteboard.string = "\(timestamp) <\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
                         }
-                        .padding(
-                            EdgeInsets(
-                                top: 0,
-                                leading: 0,
-                                bottom: 0,
-                                trailing: 0
-                            )
-                        )
-                        .listRowInsets(EdgeInsets(top: 0,
-                                                  leading: 0,
-                                                  bottom: 0,
-                                                  trailing: 0
-                                                 ))
-                        .onTapGesture {
-                            //scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
-                        }
-                        .refreshable {
-                            socketManager.loadMoreMessagesInCurrentBuffer()
-                        }
-                        .id(msg.id)
-                        .contextMenu {
-                            Button {
-                                let pasteboard = UIPasteboard.general
-                                if let msgParsedDate = msg.timeParsed {
-                                    let timestamp = formatTimestamp(parsedDate: msgParsedDate)
-                                    pasteboard.string = "\(timestamp) <\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
-                                }
-                            } label: {
-                                Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
-
-                            }
-                            Button {
-                                let pasteboard = UIPasteboard.general
-                                pasteboard.string = "<\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
-                            } label: {
-                                Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
-                            }
-                        }
-                    }.listStyle(.plain)
-                        .listRowSpacing(1.0)
-                        .listSectionSpacing(2.0)
-                        .listRowSeparator(.hidden)
-                        .scrollDismissesKeyboard(.never)
-                    // TODO: Auto-scroll needs some love and care
-                    .onAppear {
-                        scrollProxy = proxy
+                    } label: {
+                        Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
+                        
                     }
-                    .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last) { oldValue, newValue in
-                        if let oldMessageId = oldValue?.id {
-
-                            // We are scrolled all the way down to the (OLD)last message, let's scroll since we new have a new one to scroll even further down to.
-                            if oldMessageId == scrolledID {
-                                // Set the scrolledID variable, since we are forcing a scroll with scrollTo()
-                                scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id
-
-                                withAnimation {
-                                    scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
-                                }
-                            } else {
-                                print("I am not scrolling for you, you are probably reading the backlog. TODO: here we could show some sort of highlight of new activity in the UI or sth")
-                            }
-                        }
-
-                        print("\n [AFTER MESSAGE] scrolledID is = \(String(describing: scrolledID)), \n the last messgae is = \(String(describing: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id))")
-                    }
-                    .onChange(of: socketManager.currentBuffer) {
-                        withAnimation {
-                            scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottomTrailing)
-                        }
+                    Button {
+                        let pasteboard = UIPasteboard.general
+                        pasteboard.string = "<\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
+                    } label: {
+                        Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
                     }
                 }
-            ///*.scrollTargetLayout()
-                //.scrollDismissesKeyboard(.automatic)
-                /*.toolbar {
-                    ToolbarItem(placement: .keyboard) {
-
+            }.listStyle(.plain)
+                .listRowSpacing(1.0)
+                .listSectionSpacing(2.0)
+                .listRowSeparator(.hidden)
+                .scrollDismissesKeyboard(.never)
+            // TODO: Auto-scroll needs some love and care
+                .onAppear {
+                    scrollProxy = proxy
+                }
+                .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last) { oldValue, newValue in
+                    
+                    print("\n [BEFORE MESSAGE] scrolledID is = \(String(describing: scrolledID)), \n the last messgae is = \(String(describing: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id))")
+                    if let oldMessageId = oldValue?.id {
+                        scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                        
+                        // We are scrolled all the way down to the (OLD)last message, let's scroll since we new have a new one to scroll even further down to.
+                        if oldMessageId == scrolledID {
+                            // Set the scrolledID variable, since we are forcing a scroll with scrollTo()
+                            // scrolledID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id
+                            
+                            withAnimation {
+                                scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottom)
+                            }
+                        } else {
+                            print("I am not scrolling for you, you are probably reading the backlog. TODO: here we could show some sort of highlight of new activity in the UI or sth")
+                        }
                     }
-                }*/
+                    
+                    print("\n [AFTER MESSAGE] scrolledID is = \(String(describing: scrolledID)), \n the last messgae is = \(String(describing: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id))")
+                }
+                .onChange(of: socketManager.currentBuffer) {
+                    withAnimation {
+                        scrollProxy?.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottomTrailing)
+                    }
+                }
         }
-        .scrollPosition(id: $scrolledID, anchor: .bottomLeading)
-        /*.onChange(of: scrolledID) { oldValue, newValue in
-            //print(newValue ?? "No value set")
-        }*/
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea(.keyboard)
     }
+    .scrollPosition(id: $scrolledID, anchor: .bottomLeading)*/
+    /*.onChange(of: scrolledID) { oldValue, newValue in
+        //print(newValue ?? "No value set")
+    }*/
+    //.frame(maxWidth: .infinity, maxHeight: .infinity)
+    //.ignoresSafeArea(.keyboard)
+    ///*.scrollTargetLayout()
+        //.scrollDismissesKeyboard(.automatic)
+        /*.toolbar {
+            ToolbarItem(placement: .keyboard) {
 
+            }
+        }*/
+    
+    /**ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
+     HStack(alignment: .top) {
+         Text(.init(String(msg.id))).onTapGesture {
+             proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id)
+         }
+         
+         if showTimestampsSetting {
+             if let msgParsedDate = msg.timeParsed {
+                 LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
+                     .foregroundColor(.gray)
+             } else {
+                 LoungeText(text: "Unknown TS")
+             }
+         }
+         
+         if let msgNick = msg.from {
+             LoungeText(text: truncateNickname(origNickname: msgNick.nick))
+                 .foregroundColor(getNicknameColor(nickname: msgNick.nick))
+         } else {
+             LoungeText(text: "SYSTEM")
+         }
+         
+         Text(.init(msg.text)) // id here is important for the scroll proxy to work apparently
+             .padding(.horizontal)
+             .textSelection(.enabled)
+             .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+             .environment(\.openURL, OpenURLAction { url in
+                 handleUserClickedLink(url: url)
+                 return .handled
+             })
+     }*/
+    @State var dataID: Int?
+    var messageView: some View {
+    
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack {
+                    Text("Header")
+                    
+                    LazyVStack {
+                        ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
+                            HStack {
+                                /*Color.red
+                                 .frame(height: 100)
+                                 .overlay {*/
+                                if showTimestampsSetting {
+                                    if let msgParsedDate = msg.timeParsed {
+                                        LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
+                                            .foregroundColor(.gray)
+                                        LoungeText(text: "\(msg.id)")
+                                    } else {
+                                        LoungeText(text: "Unknown TS")
+                                    }
+                                }
+                                
+                                if let msgNick = msg.from {
+                                    LoungeText(text: truncateNickname(origNickname: msgNick.nick))
+                                        .foregroundColor(getNicknameColor(nickname: msgNick.nick))
+                                } else {
+                                    LoungeText(text: "SYSTEM")
+                                }                                
+                                Text(.init(msg.text)) // id here is important for the scroll proxy to work apparently
+                                    .padding(.horizontal)
+                                    .textSelection(.enabled)
+                                    .font(.system(.body, design: useMonospaceFont == true ? .monospaced : .default)) // TODO: make into custom Text element or sth
+                                    .environment(\.openURL, OpenURLAction { url in
+                                        handleUserClickedLink(url: url)
+                                        return .handled
+                                    })
+                                    .padding()
+                                    .background()
+                            }
+                                //}
+                        }
+                    }
+                    .scrollTargetLayout()
+                }
+            }
+            .scrollPosition(id: $dataID, anchor: .bottomLeading)
+        }
+    }
+    
+    
+    var dataIDText: String {
+        dataID.map(String.init(describing:)) ?? "blabla"
+    }
     var body: some View {
         ZStack {
             NavigationStack {
                 VStack {
                     messageView
                     bottomField
+                    Text("\(dataIDText)")
+                    
                 }
                 .navigationBarItems(
                     leading: Button(action: {

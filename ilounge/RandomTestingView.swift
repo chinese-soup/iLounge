@@ -16,25 +16,81 @@ struct TestView: View {
     private let width = 500.0
     let baseText = "apple pear orange lemon"
     let baseUrl = "https://github.com/search/repositories?q="
-
+    
     func availableFonts() -> [String] {
-            var fonts: [String] = []
-
-            for family in UIFont.familyNames {
-                for name in UIFont.fontNames(forFamilyName: family) {
-                    fonts.append(name)
-                }
+        var fonts: [String] = []
+        
+        for family in UIFont.familyNames {
+            for name in UIFont.fontNames(forFamilyName: family) {
+                fonts.append(name)
             }
-        print("fonts count \(fonts.count)")
-
-            return fonts
         }
-
-    @State private var offset = CGFloat.zero
-    @State private var scrollAtBottom = false
-
-    @State private var idcko: Int?
+        print("fonts count \(fonts.count)")
+        
+        return fonts
+    }
+    @State var data: [String] = (0 ..< 25).map { String($0) }
+    @State var dataID: String?
+    
     var body: some View {
+        ScrollView {
+            VStack {
+                Text("Header")
+                
+                LazyVStack {
+                    ForEach(data, id: \.self) { item in
+                        Color.red
+                            .frame(width: 100, height: 100)
+                            .overlay {
+                                Text("\(item)")
+                                    .padding()
+                                    .background()
+                            }
+                    }
+                }
+                .scrollTargetLayout()
+            }
+        }
+        .scrollPosition(id: $dataID, anchor: .bottomLeading)
+        .safeAreaInset(edge: .bottom) {
+            Text("\(Text("Scrolled").bold()) \(dataIDText)")
+            Spacer()
+            Button {
+                dataID = data.first
+            } label: {
+                Label("Top", systemImage: "arrow.up")
+            }
+            Button {
+                dataID = data.last
+            } label: {
+                Label("Bottom", systemImage: "arrow.down")
+            }
+            Menu {
+                Button("Prepend") {
+                    let next = String(data.count)
+                    data.insert(next, at: 0)
+                }
+                Button("Append") {
+                    let next = String(data.count)
+                    data.append(next)
+                }
+                Button("Remove First") {
+                    data.removeFirst()
+                }
+                Button("Remove Last") {
+                    data.removeLast()
+                }
+            } label: {
+                Label("More", systemImage: "ellipsis.circle")
+            }
+        }
+    }
+    
+    var dataIDText: String {
+        dataID.map(String.init(describing:)) ?? "None"
+    }
+}
+   // var body: some View {
 
         /*ScrollView {
          LazyVStack {
@@ -57,31 +113,8 @@ struct TestView: View {
          //print("\($0)")
          //print("offset >> \($0)")
          }*/
-
-        let array: [String] = (0...100).map { "\($0)" }
-        var onEndOfList = true
-
-        List {
-            ForEach(array, id: \.self) { element in
-                HStack {
-                    Text(element)
-                    Text("blabala")
-                }
-            }
-            Color.clear
-                .frame(width: 0, height: 0, alignment: .bottom)
-                .onAppear {
-                    onEndOfList = true
-                    print("End of list")
-                }
-                .onDisappear {
-                    onEndOfList = false
-                    print("NOT end of list")
-                }
-        }.listStyle(.plain)
-           
-    }
-       }
+        
+        
 
         /*List(self.availableFonts(), id: \.self) { fontName in
                    Text(fontName)
