@@ -307,30 +307,39 @@ struct ContentView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack {
-                    Text("Header")
-                    
+                    // VStack {
                     LazyVStack {
                         ForEach(socketManager.channelsStore[socketManager.currentBuffer]?.messages ?? []) { msg in
-                            HStack {
+                            HStack(alignment: .top) {
                                 /*Color.red
                                  .frame(height: 100)
                                  .overlay {*/
-                                if showTimestampsSetting {
+                                
+                                /*Text(.init(String(msg.id))).onTapGesture {
+                                    print("BEFORE: \(String(describing: dataID))")
+                                    proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottomTrailing)
+                                    dataID = socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id
+                                    print("AFTER: \(String(describing: dataID))")
+                                } .multilineTextAlignment(.leading)
+                                Spacer()
+                                */
+                                
+                                /*if showTimestampsSetting {
                                     if let msgParsedDate = msg.timeParsed {
                                         LoungeText(text: formatTimestamp(parsedDate: msgParsedDate))
                                             .foregroundColor(.gray)
-                                        LoungeText(text: "\(msg.id)")
                                     } else {
                                         LoungeText(text: "Unknown TS")
                                     }
-                                }
+                                }*/
+                                Text(.init(String(msg.id)))
                                 
                                 if let msgNick = msg.from {
                                     LoungeText(text: truncateNickname(origNickname: msgNick.nick))
                                         .foregroundColor(getNicknameColor(nickname: msgNick.nick))
                                 } else {
                                     LoungeText(text: "SYSTEM")
-                                }                                
+                                }
                                 Text(.init(msg.text)) // id here is important for the scroll proxy to work apparently
                                     .padding(.horizontal)
                                     .textSelection(.enabled)
@@ -338,23 +347,59 @@ struct ContentView: View {
                                     .environment(\.openURL, OpenURLAction { url in
                                         handleUserClickedLink(url: url)
                                         return .handled
-                                    })
-                                    .padding()
-                                    .background()
-                            }
+                                    }).multilineTextAlignment(.leading)
+                                    //.padding()
+                                    //.background()
+                                Spacer()
+                            }.id(msg.id) // end of HStack
+                                .contextMenu {
+                                    Button {
+                                        let pasteboard = UIPasteboard.general
+                                        if let msgParsedDate = msg.timeParsed {
+                                            let timestamp = formatTimestamp(parsedDate: msgParsedDate)
+                                            pasteboard.string = "\(timestamp) <\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
+                                        }
+                                    } label: {
+                                        Label("Copy to clipboard with timestamp", systemImage: "doc.on.doc.fill")
+                                        
+                                    }
+                                    Button {
+                                        let pasteboard = UIPasteboard.general
+                                        pasteboard.string = "<\(msg.from?.nick ?? "SYSTEM")> \(msg.text)"
+                                    } label: {
+                                        Label("Copy to clipboard without timestamp", systemImage: "doc.on.doc")
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 //}
+                        } // ForEach END
+                        .frame(maxWidth: .infinity)
+                        .onChange(of: socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id) { oldValue, newValue in
+                            if oldValue == dataID {
+                                proxy.scrollTo(socketManager.channelsStore[socketManager.currentBuffer]?.messages.last?.id, anchor: .bottomTrailing)
+                                dataID = newValue
+                            } else {
+                                if dataID == nil {
+                                    dataID = newValue
+                                }
+                            }
+                        
+                           print("oldValue = ", oldValue, "newValue = ", newValue, "dataID = ", dataID)
                         }
-                    }
-                    .scrollTargetLayout()
+                        
+                    }.scrollTargetLayout() // LazVStack END
+                       
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .scrollPosition(id: $dataID, anchor: .bottomLeading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
     
     
     var dataIDText: String {
-        dataID.map(String.init(describing:)) ?? "blabla"
+        dataID.map(String.init(describing:)) ?? "None"
     }
     var body: some View {
         ZStack {
